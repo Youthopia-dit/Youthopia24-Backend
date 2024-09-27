@@ -1,8 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
-
-
+const { TOTP } = require("totp-generator");
 
 class UserAuthController {
   constructor() {}
@@ -86,6 +85,56 @@ class UserAuthController {
     res.status(200).cookie(token).json({
       message: "You have logged in succesfully",
       token,
+    });
+  }
+
+  async forgotPassword(req, res) {
+    // Getting the eamil from from client
+    const { email } = req.body;
+
+    // Checking if the user exists or not
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({
+        message: "The email does not exist in the database",
+      });
+    }
+
+    // Generating OTP
+    const { otp, expires } = TOTP.generate(`${process.env.OTP_SECRET_KEY}`, {
+      period: 60 * 30,
+      algorithm: "SHA-512",
+    });
+
+    // Sending the otp to the email
+
+    // Sending message to client
+    res.json({
+      message: `Otp has been sent to ${email}`,
+      expires,
+    });
+  }
+
+  async changePassword() {
+    const { otp, expiresTime } = req.body;
+
+    if (!otp || !expiresTime) {
+      return res.json({
+        message: "Enter the otp",
+      });
+    }
+
+    // Checking if the otp has expired or not
+    const currentTime = Date.now();
+
+    if (currentTime > expiresTime) {
+      return res.json({
+        message: "The otp has expired",
+      });
+    }
+
+    res.json({
+      message: "Set new password",
     });
   }
 }
