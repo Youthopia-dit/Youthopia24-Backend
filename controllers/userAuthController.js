@@ -92,13 +92,19 @@ class UserAuthController {
     // Getting the eamil from from client
     const { email } = req.body;
 
-    // Checking if the user exists or not
-    const user = await User.findOne({ email });
-    if (!user) {
+    if (!email) {
       return res.json({
-        message: "The email does not exist in the database",
+        message: "Enter a valid email",
       });
     }
+
+    // Checking if the user exists or not
+    // const user = await User.findOne({ email });
+    // if (!user) {
+    //   return res.json({
+    //     message: "The email does not exist in the database",
+    //   });
+    // }
 
     // Generating OTP
     const { otp, expires } = TOTP.generate(`${process.env.OTP_SECRET_KEY}`, {
@@ -115,10 +121,12 @@ class UserAuthController {
     });
   }
 
-  async changePassword() {
+  async checkOtp(req, res) {
     const { otp, expiresTime } = req.body;
 
-    if (!otp || !expiresTime) {
+    console.log(otp);
+
+    if (!(otp || expiresTime)) {
       return res.json({
         message: "Enter the otp",
       });
@@ -134,7 +142,7 @@ class UserAuthController {
     }
 
     res.json({
-      message: "Set new password",
+      message: "You can set new password",
     });
   }
 }
