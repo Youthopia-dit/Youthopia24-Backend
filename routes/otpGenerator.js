@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const otpGenerator = require('../controllers/otpGenerator');
 
-router.get('/', otpGenerator.opt);
+router.get('/', otpGenerator.generateOtp);
 
-router.post('/', req.body);
+router.post('/', otpGenerator.verifyOtp);
 
 module.exports = router;
