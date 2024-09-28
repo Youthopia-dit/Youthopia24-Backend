@@ -18,8 +18,8 @@ const sendMail = (to, subject, text, html) => {
         html,
         attachments: [
             {
-              filename: 'ticket.pdf',
-              path: './path-to-ticket.pdf', 
+              filename: '   RndmPdf.pdf',
+              path: './assets/RndmPdf.pdf', 
             },
         ],
     };
