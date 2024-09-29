@@ -1,11 +1,8 @@
 const express = require('express');
 const eventRoutes = require('./routes/events');
-const authRouter = require("./routes/user");
+const adminRoutes = require("./routes/adminRoutes");
 const testMailerRoute = require('./routes/testMailer');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-
+const authRoutes = require('./routes/authRoutes');
 require("dotenv").config();
 
 const connectDB = require("./db");
@@ -25,7 +22,9 @@ app.get("/", (req, res) => {
     res.send("Hello World!");
   });
   
-app.use("/", authRouter);
+app.use("/", authRoutes);
+app.use("/", adminRoutes);
+
 
 // Start Server
 const PORT = process.env.PORT || 3000;
