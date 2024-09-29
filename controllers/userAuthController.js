@@ -96,6 +96,39 @@ class UserAuthController {
     });
   }
 
+  async changePassword(req, res) {
+    // Getting data from frontend
+    const { email, newPassword, repeatPassword } = req.body;
+
+    // checking if the password and repeatPassword are same
+    if (!(newPassword === repeatPassword)) {
+      return res.json({
+        message: 'repeat password and the new password are not same',
+      });
+    }
+
+    // Finding the user
+    const user = await User.findOne({ email });
+    const userId = user._id;
+
+    // Checking if the user exist or not
+    if (!user) {
+      return res.json({
+        message: 'User does not exist',
+      });
+    }
+
+    // Hasing the password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Storing the new password in the database
+    await User.findByIdAndUpdate(userId, { password: hashedPassword });
+
+    res.json({
+      message: 'your password has been changed',
+    });
+  }
+
   async forgotPassword(req, res) {
     // Getting the eamil from from client
     const { email } = req.body;
