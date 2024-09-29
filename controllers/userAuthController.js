@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
-const { TOTP } = require("totp-generator");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+const { TOTP } = require('totp-generator');
 
 class UserAuthController {
   constructor() {}
@@ -21,7 +21,7 @@ class UserAuthController {
     // All data should exist
     if (!(name && password && email)) {
       return res.json({
-        message: "Fill the credientials",
+        message: 'Fill the credientials',
       });
     }
 
@@ -29,7 +29,7 @@ class UserAuthController {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.json({
-        message: "email already exist",
+        message: 'email already exist',
       });
     }
 
@@ -54,12 +54,12 @@ class UserAuthController {
       },
       process.env.JWT_SECRET_KEY_AUTH,
       {
-        expiresIn: "10d",
+        expiresIn: '10d',
       }
     );
     user.token = token;
     res.status(200).cookie(token).json({
-      message: "You have signed up succesfully",
+      message: 'You have signed up succesfully',
     });
   }
 
@@ -68,15 +68,15 @@ class UserAuthController {
 
     if (!(email && password)) {
       return res.json({
-        message: "Enter email and password",
+        message: 'Enter email and password',
       });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({
-        message: "Incorrect email or password",
+        message: 'Incorrect email or password',
       });
     }
 
@@ -86,12 +86,12 @@ class UserAuthController {
       },
       process.env.JWT_SECRET_KEY_AUTH,
       {
-        expiresIn: "10d",
+        expiresIn: '10d',
       }
     );
     user.token = token;
     res.status(200).cookie(token).json({
-      message: "You have logged in succesfully",
+      message: 'You have logged in succesfully',
       token,
     });
   }
@@ -102,7 +102,7 @@ class UserAuthController {
 
     if (!email) {
       return res.status(400).json({
-        message: "Enter a valid email",
+        message: 'Enter a valid email',
       });
     }
 
@@ -110,14 +110,14 @@ class UserAuthController {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
-        message: "The email does not exist in the database",
+        message: 'The email does not exist in the database',
       });
     }
 
     // Generating OTP
     const { otp, expires } = TOTP.generate(`${process.env.OTP_SECRET_KEY}`, {
       period: 60 * 30,
-      algorithm: "SHA-512",
+      algorithm: 'SHA-512',
     });
 
     // Sending the otp to the email
@@ -134,7 +134,7 @@ class UserAuthController {
 
     if (!(otp || expiresTime)) {
       return res.status(400).json({
-        message: "Enter the otp",
+        message: 'Enter the otp',
       });
     }
 
@@ -143,12 +143,12 @@ class UserAuthController {
 
     if (currentTime > expiresTime) {
       return res.status(410).json({
-        message: "The otp has expired",
+        message: 'The otp has expired',
       });
     }
 
     res.status(200).json({
-      message: "You can set new password",
+      message: 'You can set new password',
     });
   }
 }
