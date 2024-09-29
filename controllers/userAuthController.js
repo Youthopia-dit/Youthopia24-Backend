@@ -57,9 +57,9 @@ class UserAuthController {
         expiresIn: '10d',
       }
     );
-    user.token = token;
     res.status(200).cookie(token).json({
       message: 'You have signed up succesfully',
+      token,
     });
   }
 
