@@ -4,6 +4,8 @@ const authRouter = require("./routes/user");
 const testMailerRoute = require('./routes/testMailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const sponsor = require('./routes/sponsor');
+
 
 
 require("dotenv").config();
@@ -20,6 +22,7 @@ app.use(express.json());  // Parse incoming JSON requests
 // Routes
 app.use('/api/events', eventRoutes);  // Use the events routes
 app.use('/api/test', testMailerRoute);
+app.use('/api/sponsor', sponsor);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
