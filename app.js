@@ -17,6 +17,7 @@ app.use(express.json());  // Parse incoming JSON requests
 // Routes
 app.use('/api/events', eventRoutes);  // Use the events routes
 app.use('/api/test', testMailerRoute);
+app.use('/api/sponsor', sponsor);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
