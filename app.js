@@ -3,6 +3,7 @@ const eventRoutes = require('./routes/events');
 const adminRoutes = require("./routes/adminRoutes");
 const sponsor = require('./routes/sponsor');
 const authRoutes = require('./routes/authRoutes');
+const eventRegisterRoutes = require('./routes/eventRegisterRoutes');
 const mailerRoutes = require('./routes/mailerRoutes')
 const docsRoutes = require("./routes/pdfRoutes");
 
@@ -21,6 +22,7 @@ app.use(express.json());  // Parse incoming JSON requests
 app.use('/api/events', eventRoutes);  // Use the events routes
 app.use('/api/sponsor', sponsor);
 app.use('/api/mailer', mailerRoutes);
+app.use('/api', eventRegisterRoutes);
 app.use("/api/docs", docsRoutes);
 
 app.get("/", (req, res) => {
