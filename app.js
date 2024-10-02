@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
   });
   
 app.use("/", authRoutes);
-app.use("/", adminRoutes);
+app.use("/admin", adminRoutes);
 
 
 // Start Server
