@@ -5,6 +5,7 @@ const {
   forgotPassword,
   checkOtp,
 } = require('../controllers/userAuthController');
+const userProtectedRoutes = require('../middleware/userProtectedRoutes');
 
 const router = express.Router();
 
