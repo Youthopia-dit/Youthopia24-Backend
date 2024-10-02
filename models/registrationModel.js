@@ -50,7 +50,7 @@ const paymentSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        transation: {
+        transaction: {
             type: String,
             required: true,
         },
@@ -79,7 +79,7 @@ const registrationSchema = new mongoose.Schema({
         required: true,
     },
     eventDetails: {
-        type: eventDetailsSchema,
+        type: eventSchema,
         required: true,
     },
     members: [memberSchema], 
