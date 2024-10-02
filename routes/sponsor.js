@@ -10,3 +10,5 @@ router.post("/signup", sponsorController.sponsorSignup);
 router.get("/verify-email", sponsorController.verifyEmail);
 
 module.exports = router;
+
+

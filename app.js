@@ -1,8 +1,9 @@
 const express = require('express');
 const eventRoutes = require('./routes/events');
 const adminRoutes = require("./routes/adminRoutes");
-const testMailerRoute = require('./routes/testMailer');
+const sponsor = require('./routes/sponsor');
 const authRoutes = require('./routes/authRoutes');
+const mailerRoutes = require('./routes/mailerRoutes')
 require("dotenv").config();
 
 const connectDB = require("./db");
@@ -16,8 +17,8 @@ app.use(express.json());  // Parse incoming JSON requests
 
 // Routes
 app.use('/api/events', eventRoutes);  // Use the events routes
-app.use('/api/test', testMailerRoute);
 app.use('/api/sponsor', sponsor);
+app.use('/api/mailer', mailerRoutes);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
