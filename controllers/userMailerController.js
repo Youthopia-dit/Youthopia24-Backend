@@ -1,13 +1,20 @@
 const nodemailer = require('nodemailer');
-const TOTP = require('otplib').totp;  // Assuming you're using `otplib` for OTP generation
+const TOTP = require('otplib').totp; 
 const { OTP_SECRET_KEY } = process.env;
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,  // Your email address
-    pass: process.env.EMAIL_PASS   // App password
-  }
+    user: process.env.EMAIL_USER, 
+    pass: process.env.EMAIL_PASS   
+  },
+  pool: true,           // Use pooling to keep connection alive
+  maxConnections: 1,    // Max connections at a time
+  rateLimit: 5,         // Max emails per second
+  debug: true,
+  logger: true,
+  connectionTimeout: 60000,  // Connection timeout in ms
+  socketTimeout: 60000,      // Socket timeout in ms
 });
 
 class UserAuthController {
