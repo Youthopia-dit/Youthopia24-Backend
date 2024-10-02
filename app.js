@@ -3,8 +3,9 @@ const eventRoutes = require('./routes/events');
 const adminRoutes = require("./routes/adminRoutes");
 const sponsor = require('./routes/sponsor');
 const authRoutes = require('./routes/authRoutes');
-const mailerRoutes = require('./routes/mailerRoutes');
 const eventRegisterRoutes = require('./routes/eventRegisterRoutes');
+const mailerRoutes = require('./routes/mailerRoutes')
+const docsRoutes = require("./routes/pdfRoutes");
 
 require("dotenv").config();
 
@@ -22,13 +23,14 @@ app.use('/api/events', eventRoutes);  // Use the events routes
 app.use('/api/sponsor', sponsor);
 app.use('/api/mailer', mailerRoutes);
 app.use('/api', eventRegisterRoutes);
+app.use("/api/docs", docsRoutes);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
   });
   
 app.use("/", authRoutes);
-app.use("/", adminRoutes);
+app.use("/admin", adminRoutes);
 
 
 // Start Server

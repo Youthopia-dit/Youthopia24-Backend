@@ -15,15 +15,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is not present"],
       select: false,
-    },  
+    }, 
+    type:{
+      type: String,
+      required: [true,"Admin Type is not  Present"]
+    }, 
     eventCategory: {
       type: String,
       required: true,
     },
-    event: {
+    eventId:{
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   { timestamps: true }
 );
