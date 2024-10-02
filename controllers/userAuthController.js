@@ -7,59 +7,63 @@ class UserAuthController {
   constructor() {}
 
   async userSignup(req, res) {
-    // Get all data from body
-    const {
-      name,
-      password,
-      email,
-      phoneNumber,
-      college,
-      year,
-      identityNumber,
-    } = req.body;
+    try {
+      // Get all data from body
+      const {
+        name,
+        password,
+        email,
+        phoneNumber,
+        college,
+        year,
+        identityNumber,
+      } = req.body;
 
-    // All data should exist
-    if (!(name && password && email)) {
-      return res.status(401).json({
-        message: 'Fill the credientials',
-      });
-    }
-
-    //   Check if user alredy exist
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({
-        message: 'email already exist',
-      });
-    }
-
-    // encrypt the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Save the user in DB
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      phoneNumber,
-      college,
-      year,
-      identityNumber,
-    });
-
-    // Generate a user and send it
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWT_SECRET_KEY_AUTH,
-      {
-        expiresIn: '10d',
+      if (!(name && password && email)) {
+        // All data should exist
+        return res.status(401).json({
+          message: 'Fill the credientials',
+        });
       }
-    );
-    res.status(200).cookie(token).json({
-      message: 'You have signed up succesfully',
-    });
+
+      //   Check if user alredy exist
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({
+          message: 'email already exist',
+        });
+      }
+
+      // encrypt the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Save the user in DB
+      const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        phoneNumber,
+        college,
+        year,
+        identityNumber,
+      });
+
+      // Generate a user and send it
+      const token = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWT_SECRET_KEY_AUTH,
+        {
+          expiresIn: '10d',
+        }
+      );
+      res.status(200).cookie(token).json({
+        message: 'You have signed up succesfully',
+      });
+    } catch (err) {
+      res.send(err);
+    }
   }
 
   async userLogin(req, res) {
@@ -100,7 +104,7 @@ class UserAuthController {
 
     // checking if the password and repeatPassword are same
     if (!(newPassword === repeatPassword)) {
-      return res.json({
+      return res.status(401).json({
         message: 'repeat password and the new password are not same',
       });
     }
