@@ -63,7 +63,7 @@ class UserAuthController {
         token,
       });
     } catch (err) {
-      res.send(err);
+      res.send(err.message);
     }
   }
 
@@ -100,7 +100,7 @@ class UserAuthController {
         token,
       });
     } catch (err) {
-      res.send(err);
+      res.send(err.message);
     }
   }
 
@@ -137,7 +137,7 @@ class UserAuthController {
         expires,
       });
     } catch (err) {
-      res.send(err);
+      res.send(err.message);
     }
   }
 
@@ -164,7 +164,7 @@ class UserAuthController {
         message: 'You can set new password',
       });
     } catch (err) {
-      res.send(err);
+      res.send(err.message);
     }
   }
 }
