@@ -1,0 +1,61 @@
+Registration Schema
+
+{
+    UID:
+    email: (User ka)
+    Team Name:
+    College:
+    Event Details:{
+        event ID:
+        event Name:
+        event Category:
+        Venue:
+    }
+    Members:[
+        {
+            Name:
+            Contact Number:
+            Email ID:
+            ID:(Government or College ID)
+        }
+    ]
+    Payment:{
+        Mode:
+        Amount:
+        Transaction ID:
+        Billing:
+    }
+}
+
+
+
+APIs:
+    Event Registration:
+    Download Docs:
+    @admin:Get Registrations by event Category:
+    @admin:get event by event id:
+    @super-admin:Delete Registration:
+    
+
+
+
+
+Event Registration Schema 2:
+    {
+        event name:
+        event id:
+        name:
+        id:
+        event date:
+        phone number:
+        email id:
+        event venue:
+}
+
+
+Register
+->Details to Backend
+->Entry into Backend Model(validation:UID should not be same, email and event id should not be same)
+->Generate QR based on the Event->Enter the Event Details into the User model
+->Docs Generation(Receipt, Ticket, Student Verification form)
+->Send Mail->Set to Admin DB(Will be notified later, skip this part)
