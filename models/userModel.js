@@ -26,12 +26,12 @@ const userSchema = new mongoose.Schema({
   identityNumber: {
     type: Number,
   },
-  profilePictureUrl: {
-    type: String,
-  },
-  collegeIdUrl: {
-    type: String,
-  },
+  // profilePictureUrl: {
+  //   type: String,
+  // },
+  // collegeIdUrl: {
+  //   type: String,
+  // },
   registeredEvent: {
     type: Array,
     default: [],

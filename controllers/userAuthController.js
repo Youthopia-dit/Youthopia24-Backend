@@ -20,7 +20,7 @@ class UserAuthController {
 
     // All data should exist
     if (!(name && password && email)) {
-      return res.json({
+      return res.status(401).json({
         message: 'Fill the credientials',
       });
     }
@@ -28,7 +28,7 @@ class UserAuthController {
     //   Check if user alredy exist
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({
+      return res.status(409).json({
         message: 'email already exist',
       });
     }
@@ -59,7 +59,6 @@ class UserAuthController {
     );
     res.status(200).cookie(token).json({
       message: 'You have signed up succesfully',
-      token,
     });
   }
 
@@ -67,7 +66,7 @@ class UserAuthController {
     const { email, password } = req.body;
 
     if (!(email && password)) {
-      return res.json({
+      return res.status(401).json({
         message: 'Enter email and password',
       });
     }
@@ -92,7 +91,6 @@ class UserAuthController {
     user.token = token;
     res.status(200).cookie(token).json({
       message: 'You have logged in succesfully',
-      token,
     });
   }
 
