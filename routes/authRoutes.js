@@ -1,20 +1,17 @@
-const express = require('express');
-const {
-  userSignup,
-  userLogin,
-  forgotPassword,
-  checkOtp,
-} = require('../controllers/userAuthController');
-const userProtectedRoutes = require('../middleware/userProtectedRoutes');
+const express = require("express");
+const authController = require("../controllers/userAuthController");
+const userProtectedRoutes = require("../middleware/userProtectedRoutes");
 
 const router = express.Router();
 
-router.post('/api/v1/signup', userSignup);
+router.post("/initialSignup", authController.initialSignup);
 
-router.post('/api/v1/login', userLogin);
+router.post("/verifyOTP", authController.verifyOtp);
 
-router.post('/api/v1/forgotpassword', forgotPassword);
+// router.post('/api/v1/login', userLogin);
 
-router.post('/api/v1/checkotp', checkOtp);
+// router.post('/api/v1/forgotpassword', forgotPassword);
+
+// router.post('/api/v1/checkotp', checkOtp);
 
 module.exports = router;

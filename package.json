@@ -21,7 +21,8 @@
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
     "totp-generator": "^1.0.0",
-    "totp.js": "^0.0.1"
+    "totp.js": "^0.0.1",
+    "youthopia-24-backend": "file:"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
