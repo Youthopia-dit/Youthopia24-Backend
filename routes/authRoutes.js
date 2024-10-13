@@ -8,10 +8,10 @@ router.post("/initialSignup", authController.initialSignup);
 
 router.post("/verifyOTP", authController.verifyOtp);
 
-// router.post('/api/v1/login', userLogin);
+router.post('/login', authController.userLogin);
 
-// router.post('/api/v1/forgotpassword', forgotPassword);
+router.post('/forgotpassword', authController.forgotPassword);
 
-// router.post('/api/v1/checkotp', checkOtp);
+router.post('/passwordResetCheckotp', authController.checkOtp);
 
 module.exports = router;

@@ -8,8 +8,8 @@ const sendEmail = (email_id, subject, content) => {
 };
 
 totp.options = {
-  step: 300,  // Time step in seconds
-  window: 1   // Flexibility in terms of time steps (1 time step before or after)
+  step: 300, // Time step in seconds
+  window: 1, // Flexibility in terms of time steps (1 time step before or after)
 };
 
 exports.initialSignup = async (req, res) => {
@@ -26,9 +26,8 @@ exports.initialSignup = async (req, res) => {
       return res.status(409).json({ message: "Email already exists" });
     }
 
-    
-    options = {  ...totp.options }; // Generating OTP valid for 5 minutes
-    const otp = totp.generate(email,options);
+    options = { ...totp.options }; // Generating OTP valid for 5 minutes
+    const otp = totp.generate(email, options);
     // Send the OTP to user's email
     await sendEmail(
       email,
@@ -52,7 +51,7 @@ exports.initialSignup = async (req, res) => {
     res.status(200).json({
       message:
         "Verification code sent to your email. Please verify to complete registration.",
-      tempStorage
+      tempStorage,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -66,7 +65,7 @@ exports.verifyOtp = async (req, res) => {
     // Retrieve user's data from temporary storage
     const userData = tempStorage; // Replace with your method of temporary storage retrieval
     const verification = totp.check(userOtp, userData.email);
-    console.log(userData.email)
+    console.log(userData.email);
     if (!verification) {
       return res
         .status(400)
@@ -79,8 +78,21 @@ exports.verifyOtp = async (req, res) => {
       email: userData.email,
       password: userData.password, // Already hashed
     });
-
-    res.status(201).json({ message: "Signup completed successfully", newUser });
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+      },
+      process.env.JWT_SECRET_KEY_AUTH,
+      {
+        expiresIn: "10d",
+      }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set secure to true if in production (HTTPS)
+      maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+    });
+    res.status(201).json({ message: "Signup completed successfully", token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -88,106 +100,127 @@ exports.verifyOtp = async (req, res) => {
 
 //USER LOGIN CONTROLLERS------>TO BE FIXED
 
-//   async userLogin(req, res) {
-//     try {
-//       const { email, password } = req.body;
+exports.userLogin = async (req, res) => {
+  const { email, password } = req.body;
 
-//       if (!(email && password)) {
-//         return res.json({
-//           message: 'Enter email and password',
-//         });
-//       }
+  if (!email || !password) {
+    return res.status(400).json({
+      message: "Please enter both email and password.",
+    });
+  }
 
-//       const user = await User.findOne({ email }).select('+password');
+  try {
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(401).json({
+        message: "Incorrect email or password.",
+      });
+    }
 
-//       if (!user || !(await bcrypt.compare(password, user.password))) {
-//         return res.status(401).json({
-//           message: 'Incorrect email or password',
-//         });
-//       }
+    const passwordIsValid = await bcrypt.compare(password, user.password);
+    if (!passwordIsValid) {
+      return res.status(401).json({
+        message: "Incorrect email or password.",
+      });
+    }
 
-//       const token = jwt.sign(
-//         {
-//           id: user._id,
-//         },
-//         process.env.JWT_SECRET_KEY_AUTH,
-//         {
-//           expiresIn: '10d',
-//         }
-//       );
-//       user.token = token;
-//       res.status(200).cookie(token).json({
-//         message: 'You have logged in succesfully',
-//         token,
-//       });
-//     } catch (err) {
-//       res.send(err.message);
-//     }
-//   }
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY_AUTH, {
+      expiresIn: "10d",
+    });
 
-//   async forgotPassword(req, res) {
-//     try {
-//       // Getting the eamil from from client
-//       const { email } = req.body;
+    // Set the token in an HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set secure to true if in production (HTTPS)
+      maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+    });
 
-//       if (!email) {
-//         return res.status(400).json({
-//           message: 'Enter a valid email',
-//         });
-//       }
+    res.status(200).json({
+      message: "You have logged in successfully.",
+      token,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error, please try again later." });
+  }
+};
 
-//       // Checking if the user exists or not
-//       const user = await User.findOne({ email });
-//       if (!user) {
-//         return res.status(404).json({
-//           message: 'The email does not exist in the database',
-//         });
-//       }
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
 
-//       // Generating OTP
-//       const { otp, expires } = TOTP.generate(`${process.env.OTP_SECRET_KEY}`, {
-//         period: 60 * 30,
-//         algorithm: 'SHA-512',
-//       });
+  if (!email) {
+    return res.status(400).json({ message: "Enter a valid email" });
+  }
 
-//       // Sending the otp to the email
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "The email does not exist in the database" });
+    }
 
-//       // Sending message to client
-//       res.status(200).json({
-//         message: `Otp has been sent to ${email}`,
-//         expires,
-//       });
-//     } catch (err) {
-//       res.send(err.message);
-//     }
-//   }
+    const secret = user._id.toString(); // Use user's ID as the secret for TOTP
+    const otp = totp.generate(secret);
 
-//   async checkOtp(req, res) {
-//     try {
-//       const { otp, expiresTime } = req.body;
+    await sendEmail(
+      email,
+      "Verify Your Email",
+      `Your verification code is: ${otp}`
+    );
 
-//       if (!(otp || expiresTime)) {
-//         return res.status(400).json({
-//           message: 'Enter the otp',
-//         });
-//       }
+    
 
-//       // Checking if the otp has expired or not
-//       const currentTime = Date.now();
+    res.status(200).json({
+      message:
+        "OTP has been sent to your email. Please use it to reset your password.",
+      expiresIn: "5 minutes",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-//       if (currentTime > expiresTime) {
-//         return res.status(410).json({
-//           message: 'The otp has expired',
-//         });
-//       }
+exports.checkOtp = async (req, res) => {
+  const { email, userOtp } = req.body;
 
-//       res.status(200).json({
-//         message: 'You can set new password',
-//       });
-//     } catch (err) {
-//       res.send(err.message);
-//     }
-//   }
-// }
+  if (!userOtp || !email) {
+    return res.status(400).json({ message: "Enter both OTP and email" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const secret = user._id.toString(); // Use the same method to generate the secret as in forgotPassword
+    const isValid = totp.check(userOtp, secret);
+
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET_KEY_AUTH,
+      { expiresIn: "15m" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set secure to true if in production (HTTPS)
+      maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+    });
+
+    
+
+    res
+      .status(200)
+      .json({
+        message: "OTP verified. You can now set a new password.",
+      });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // module.exports = new UserAuthController();
