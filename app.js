@@ -1,5 +1,6 @@
 const express = require("express");
 const eventRoutes = require("./Routes/events");
+// const bodyParser = require('body-parser');
 const adminRoutes = require("./Routes/adminRoutes");
 const sponsor = require("./Routes/sponsor");
 const authRoutes = require("./Routes/authRoutes");
