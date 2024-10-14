@@ -127,6 +127,7 @@ exports.userLogin = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY_AUTH, {
       expiresIn: "10d",
     });
+    console.log(token)
 
     // Set the token in an HTTP-only cookie
     res.cookie("token", token, {
@@ -204,6 +205,7 @@ exports.checkOtp = async (req, res) => {
       process.env.JWT_SECRET_KEY_AUTH,
       { expiresIn: "15m" }
     );
+    
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -222,5 +224,44 @@ exports.checkOtp = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+exports.resetPasswordController = async (req, res) => {
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    return res.status(400).json({ message: "Please provide a new password." });
+  }
+
+  try {
+    const user = await User.findById(req.user.id); // Get user from decoded token
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    // Re-issue a new token after password reset for security reasons
+    const newToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY_AUTH, {
+      expiresIn: "10d",
+    });
+
+    // Update the token in an HTTP-only cookie
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Ensure cookies are sent over HTTPS
+      maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+    });
+
+    res.status(200).json({ message: "Password reset successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
 
 // module.exports = new UserAuthController();

@@ -14,4 +14,5 @@ router.post('/forgotpassword', authController.forgotPassword);
 
 router.post('/passwordResetCheckotp', authController.checkOtp);
 
+router.post('/resetPassword',userProtectedRoutes,authController.resetPasswordController)
 module.exports = router;

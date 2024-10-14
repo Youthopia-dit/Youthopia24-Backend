@@ -50,7 +50,10 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   coordinator: {
-    type: {}, // Array of strings
+    type: [{
+      name:{type: String},
+      number:{type: String}
+    }], // Array of strings
     required: true,
   },
   rules: {
@@ -62,7 +65,10 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   overall_head: {
-    type: {},
+    type: [{
+      name:{type: String},
+      number:{type: String}
+    }],
     required: true,
   },
   participant_max: {
