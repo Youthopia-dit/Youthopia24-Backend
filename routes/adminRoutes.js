@@ -1,10 +1,10 @@
-const express = require("express");
-const { userSignup, userLogin } = require("../controllers/adminController");
+// const express = require("express");
+// const { userSignup, userLogin } = require("../controllers/adminController");
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post("/api/signup", userSignup);
+// router.post("/api/signup", userSignup);
 
-router.post("/api/login", userLogin);
+// router.post("/api/login", userLogin);
 
-module.exports = router;
+// module.exports = router;
