@@ -1,31 +1,38 @@
-// const nodemailer = require('nodemailer');
-// require('dotenv').config();
+const nodemailer = require('nodemailer');
 
-// // const transporter = nodemailer.createTransport({
-// //     service: 'gmail',
-// //     auth: {
-// //         user: process.env.EMAIL_USER,
-// //         pass: process.env.EMAIL_PASS,
-// //     }
-// });
+// Create a transporter for Outlook 365
+let transporter = nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    port: 587, // As per Outlook 365 SMTP settings
+    secure: false, // True for 465, false for other ports
+    auth: {
+        user: 'youthopia@dit.edu.in', // Your Outlook 365 email address
+        pass: 'P%808934281838at' // Your Outlook 365 password
+    },
+    tls: {
+        ciphers: 'SSLv3'
+    }
+});
 
-// const sendMail = (to, subject, text, html) => {
-//     // const mailOptions = {
-//     //     from: process.env.EMAIL_USER,
-//     //     to,
-//     //     subject,
-//     //     text,
-//     //     html,
-//     //     attachments: [
-//     //         {
-//     //           filename: '   RndmPdf.pdf',
-//     //           path: './assets/RndmPdf.pdf', 
-//     //         },
-//     //     ],
-//     // };
+exports.SendEmail=(email,subject,content)=>{
+    const mailOptions = {
+        from: 'Youthopia 2024', 
+        to: email, 
+        subject: subject, 
+        text: content, 
+        // html: '<b>Hello world?</b>'
+    };
+    
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+    });
+    return "Mail Sent Successfully"
+}   
 
-//     // return transporter.sendMail(mailOptions);
-//     return 0;
-// };
+// Setup email data
 
-// module.exports = sendMail;
+
