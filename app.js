@@ -14,6 +14,7 @@ const connectDB = require("./db");
 const app = express();
 
 connectDB();
+app.use(cors());
 
 // Middleware
 app.use(express.json()); // Parse incoming JSON requests
