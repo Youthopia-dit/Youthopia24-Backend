@@ -28,6 +28,9 @@ app.use("/api/events", eventRoutes); // Use the events routes
 // app.get("/", (req, res) => {
 //   res.send("Hello World!");
 // });
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 app.use("/api/user", authRoutes);
 // app.use("/admin", adminRoutes);
