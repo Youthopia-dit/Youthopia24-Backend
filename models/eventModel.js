@@ -50,10 +50,8 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   coordinator: {
-    type: [{
-      name:{type: String},
-      number:{type: String}
-    }], // Array of strings
+    type: Map,
+    of: String,
     required: true,
   },
   rules: {
@@ -65,10 +63,8 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   overall_head: {
-    type: [{
-      name:{type: String},
-      number:{type: String}
-    }],
+    type: Map,
+    of: String,
     required: true,
   },
   participant_max: {
@@ -83,7 +79,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  prices: [priceSchema],  // Array of prices based on team size
+  prices: [priceSchema],
 });
 
 const Event = mongoose.model("Event", eventSchema);
