@@ -1,2 +1,8 @@
 /node_modules
 .env
+
+./ca_bundle.crt
+./certificate.crt
+./5ED936633B001DCD64C33D0C9C78AD22.txt
+./private.key
+./web.config
