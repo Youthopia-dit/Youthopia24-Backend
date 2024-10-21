@@ -261,7 +261,12 @@ exports.resetPasswordController = async (req, res) => {
   }
 };
 
+exports.getUserProfile = async (req, res) => {
 
+  const userProfile = await User.findOne({ email });
+  if (!userProfile) {
+    return res.status(404).json({ message: "User not found." });
+  }
 
-
-// module.exports = new UserAuthController();
+  res.json({ profile: userProfile });
+}
