@@ -5,7 +5,7 @@ const eventRoutes = require("./Routes/events");
 // const sponsor = require("./Routes/sponsor");
 const authRoutes = require("./Routes/authRoutes");
 const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
-// const mailerRoutes = require("./Routes/mailerRoutes");
+const mailerRoutes = require("./Routes/mailerRoutes");
 // const docsRoutes = require("./Routes/pdfRoutes");
 
 require("dotenv").config();
@@ -23,7 +23,7 @@ app.use(express.json()); // Parse incoming JSON requests
 // Routes
 app.use("/api/events", eventRoutes); // Use the events routes
 // app.use("/api/sponsor", sponsor);
-// app.use("/api/mailer", mailerRoutes);
+app.use("/api/mailer", mailerRoutes);
 app.use("/api/register/", eventRegisterRoutes);
 // app.use("/api/docs", docsRoutes);
 
