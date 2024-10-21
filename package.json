@@ -24,6 +24,8 @@
     "speakeasy": "^2.0.0",
     "totp-generator": "^1.0.0",
     "totp.js": "^0.0.1",
+    "uuid": "^10.0.0",
+    "uuidv4": "^6.2.13",
     "youthopia-24-backend": "file:"
   },
   "devDependencies": {
