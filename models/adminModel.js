@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,25 +13,25 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is not present"],
+      required: [true, 'Password is not present'],
       select: false,
-    }, 
-    type:{
+    },
+    type: {
       type: String,
-      required: [true,"Admin Type is not  Present"]
-    }, 
+      required: [true, 'Admin Type is not  Present'],
+    },
     eventCategory: {
       type: String,
       required: true,
     },
-    eventId:{
+    eventId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model('user', userSchema);
 
 module.exports = User;
