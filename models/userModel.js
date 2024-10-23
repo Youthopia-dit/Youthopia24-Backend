@@ -16,24 +16,31 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
+    default: null,
   },
   college: {
     type: String,
+    default: null,
   },
   branch: {
     type: String,
+    default: null,
   },
   year: {
     type: String,
+    default: null,
   },
   identityNumber: {
     type: String,
+    default: null,
   },
   profilePictureUrl: {
     type: String,
+    default: null,
   },
   collegeId: {
     type: String,
+    default: null,
   },
   registeredEvent: {
     type: Array,
