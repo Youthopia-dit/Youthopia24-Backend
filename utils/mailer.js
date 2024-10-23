@@ -1,11 +1,12 @@
 const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 let transporter = nodemailer.createTransport({
   host: "smtp.office365.com",
   port: 587,
   secure: false,
   auth: {
-    user: "noreply.youthopia@dit.edu.in",
+    user: "registration.youthopia@dit.edu.in",
     pass: "C)618294122404ah",
   },
   tls: {
@@ -13,12 +14,20 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-exports.SendEmail = (email, subject, content) => {
+exports.SendEmail = (email, subject, content, attachmentPath = null) => {
   const mailOptions = {
     from: '"Youthopia" <noreply.youthopia@dit.edu.in>',
     to: email,
     subject: subject,
     text: content,
+    attachments: attachmentPath
+      ? [
+          {
+            filename: path.basename(attachmentPath),
+            path: attachmentPath,
+          },
+        ]
+      : [],
   };
 
   const flag = 0;

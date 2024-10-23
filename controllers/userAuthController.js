@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const { totp } = require("otplib");
+const {SendEmail}=require("../utils/mailer")
 
 const sendEmail = (email_id, subject, content) => {
   console.log(content);
