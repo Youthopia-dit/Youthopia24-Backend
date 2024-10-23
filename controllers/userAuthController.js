@@ -26,16 +26,7 @@ exports.initialSignup = async (req, res) => {
       governmentId,
     } = req.body;
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !college ||
-      !branch ||
-      !year ||
-      !collegeId ||
-      !phone
-    ) {
+    if (!name || !email || !password) {
       return res
         .status(400)
         .json({ message: 'Please provide all the details' });
@@ -73,52 +64,6 @@ exports.initialSignup = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// exports.initialSignup = async (req, res) => {
-//   const { name, email, password } = req.body;
-//   if (!name || !email || !password) {
-//     return res
-//       .status(400)
-//       .json({ message: "Please provide name, email, and password" });
-//   }
-
-//   try {
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser) {
-//       return res.status(409).json({ message: "Email already exists" });
-//     }
-
-//     options = { ...totp.options }; // Generating OTP valid for 5 minutes
-//     const otp = totp.generate(email, options);
-//     // Send the OTP to user's email
-//     await sendEmail(
-//       email,
-//       "Verify Your Email",
-//       `Your verification code is: ${otp}`
-//     );
-
-//     // For the sake of this example, let's store this hashed password temporarily
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // Store the user's details temporarily in a secure place or in memory
-//     // In a production environment, consider securing this data appropriately
-//     const tempStorage = {
-//       name,
-//       email,
-//       password: hashedPassword,
-//       otp,
-//     };
-
-//     // Respond to user
-//     res.status(200).json({
-//       message:
-//         "Verification code sent to your email. Please verify to complete registration.",
-//       tempStorage,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 exports.verifyOtp = async (req, res) => {
   const { tempStorage, userOtp } = req.body;
