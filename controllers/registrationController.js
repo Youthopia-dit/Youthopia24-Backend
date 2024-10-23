@@ -1,8 +1,8 @@
-const express = require("express");
-const Registration = require("../models/registrationModel");
-const Event = require("../models/eventModel");
-const { v4: uuidv4 } = require("uuid");
-const User = require("../models/userModel");
+const express = require('express');
+const Registration = require('../models/registrationModel');
+const Event = require('../models/eventModel');
+const { v4: uuidv4 } = require('uuid');
+const User = require('../models/userModel');
 
 exports.registerEvent = async (req, res) => {
   try {
@@ -18,7 +18,7 @@ exports.registerEvent = async (req, res) => {
     const regID = uuidv4();
     const event = await Event.findOne({ event_id: eventId });
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: 'Event not found' });
     }
 
     const registration = new Registration({
@@ -38,17 +38,17 @@ exports.registerEvent = async (req, res) => {
     });
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     await registration.save();
     user.registeredEvent.push(registration.regID);
     await user.save();
 
-    res.status(201).json({ message: "Registration successful", registration });    
+    res.status(201).json({ message: 'Registration successful', registration });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -121,23 +121,23 @@ exports.getRegistrationsByIds = async (req, res) => {
   try {
     const { registrationIds } = req.body;
 
-    if (!registrationIds || !Array.isArray(registrationIds)) {
+    if (!registrationIds && !Array.isArray(registrationIds)) {
       return res
         .status(400)
-        .json({ message: "Invalid registration IDs format" });
+        .json({ message: 'Invalid registration IDs format' });
     }
 
     const registrations = await Registration.find({
-      _id: { $in: registrationIds },
+      regID: { $in: registrationIds },
     });
 
     if (registrations.length === 0) {
-      return res.status(404).json({ message: "No registrations found" });
+      return res.status(404).json({ message: 'No registrations found' });
     }
 
     res.status(200).json({ registrations });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
