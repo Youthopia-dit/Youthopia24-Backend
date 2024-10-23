@@ -15,7 +15,7 @@ exports.registerEvent = async (req, res) => {
     const regID = uuidv4();
     const event = await Event.findOne({ event_id: eventDetails.eventID });
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: 'Event not found' });
     }
 
     const teamSize = members.length;
@@ -50,7 +50,7 @@ exports.registerEvent = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
     await registration.save();
 
@@ -93,7 +93,7 @@ exports.registerEvent = async (req, res) => {
     res.status(201).json({ message: "Registration successful", registration });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -106,16 +106,16 @@ exports.getRegistrationsByIds = async (req, res) => {
     }
 
     const registrations = await Registration.find({
-      _id: { $in: registrationIds },
+      regID: { $in: registrationIds },
     });
 
     if (registrations.length === 0) {
-      return res.status(404).json({ message: "No registrations found" });
+      return res.status(404).json({ message: 'No registrations found' });
     }
 
     res.status(200).json({ registrations });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
