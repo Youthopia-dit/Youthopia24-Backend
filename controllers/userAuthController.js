@@ -53,6 +53,7 @@ exports.initialSignup = async (req, res) => {
     const token = jwt.sign(
       {
         id: newUser._id,
+        email: newUser.email,
       },
       process.env.JWT_SECRET_KEY_AUTH,
       {
@@ -135,6 +136,7 @@ exports.verifyOtp = async (req, res) => {
     const token = jwt.sign(
       {
         id: newUser._id,
+        email: newUser.email,
       },
       process.env.JWT_SECRET_KEY_AUTH,
       {
@@ -178,7 +180,7 @@ exports.userLogin = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY_AUTH, {
+    const token = jwt.sign({ id: user._id, email:user.email}, process.env.JWT_SECRET_KEY_AUTH, {
       expiresIn: "10d",
     });
     console.log(token)
@@ -317,8 +319,8 @@ exports.resetPasswordController = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
   try {
-    const id = req.user._id;
-    const userProfile = await User.findOne({ id });
+    const email = req.user.email;
+    const userProfile = await User.findOne({ email});
     if (!userProfile) {
       return res.status(404).json({ message: "User not found." });
     }
