@@ -14,22 +14,25 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is not present'],
     select: false,
   },
-  phoneNumber: {
-    type: Number,
+  phone: {
+    type: String,
   },
   college: {
     type: String,
   },
+  branch: {
+    type: String,
+  },
   year: {
-    type: Number,
+    type: String,
   },
   identityNumber: {
-    type: Number,
+    type: String,
   },
   profilePictureUrl: {
     type: String,
   },
-  collegeIdUrl: {
+  collegeId: {
     type: String,
   },
   registeredEvent: {

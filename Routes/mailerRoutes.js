@@ -1,5 +1,6 @@
-// const express = require('express');
-// const router = express.Router();
+const express = require('express');
+const router = express.Router();
+const {SendEmail}=require("../utils/mailer")
 // const UserMailerController = require('../controllers/userMailerController'); 
 
 // // Route for registration mail
@@ -20,4 +21,15 @@
 // // Route for validating OTP
 // router.post('/validate-otp', UserMailerController.validateOtp);
 
-// module.exports = router;
+// Testing Route
+router.post('/test-mail',(req,res)=>{
+        const {email}=req.body;
+        const Subject='Test Email'
+        const Content='This is the test email content'
+        const response=SendEmail(email,Subject,Content);
+        console.log(response)
+        res.json(response);
+
+})
+
+module.exports = router;
