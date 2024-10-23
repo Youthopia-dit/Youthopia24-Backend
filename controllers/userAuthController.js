@@ -13,50 +13,112 @@ totp.options = {
 };
 
 exports.initialSignup = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: 'Please provide name, email, and password' });
-  }
-
   try {
+    const {
+      name,
+      email,
+      password,
+      college,
+      branch,
+      year,
+      collegeId,
+      phone,
+      governmentId,
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !college ||
+      !branch ||
+      !year ||
+      !collegeId ||
+      !phone
+    ) {
+      return res
+        .status(400)
+        .json({ message: 'Please provide all the details' });
+    }
+
+    console.log(req.body);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already exists' });
     }
-
-    options = { ...totp.options }; // Generating OTP valid for 5 minutes
-    const otp = totp.generate(email, options);
-    // Send the OTP to user's email
-    await sendEmail(
-      email,
-      'Verify Your Email',
-      `Your verification code is: ${otp}`
-    );
-
-    // For the sake of this example, let's store this hashed password temporarily
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Store the user's details temporarily in a secure place or in memory
-    // In a production environment, consider securing this data appropriately
-    const tempStorage = {
+    const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
-      otp,
-    };
-
-    // Respond to user
-    res.status(200).json({
-      message:
-        'Verification code sent to your email. Please verify to complete registration.',
-      tempStorage,
+      college,
+      branch,
+      year,
+      collegeId,
+      phone,
+      identityNumber: governmentId,
     });
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+      },
+      process.env.JWT_SECRET_KEY_AUTH,
+      {
+        expiresIn: '10d',
+      }
+    );
+    console.log('user created');
+    res.status(201).json({ message: 'Signup completed successfully', token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+// exports.initialSignup = async (req, res) => {
+//   const { name, email, password } = req.body;
+//   if (!name || !email || !password) {
+//     return res
+//       .status(400)
+//       .json({ message: "Please provide name, email, and password" });
+//   }
+
+//   try {
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(409).json({ message: "Email already exists" });
+//     }
+
+//     options = { ...totp.options }; // Generating OTP valid for 5 minutes
+//     const otp = totp.generate(email, options);
+//     // Send the OTP to user's email
+//     await sendEmail(
+//       email,
+//       "Verify Your Email",
+//       `Your verification code is: ${otp}`
+//     );
+
+//     // For the sake of this example, let's store this hashed password temporarily
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Store the user's details temporarily in a secure place or in memory
+//     // In a production environment, consider securing this data appropriately
+//     const tempStorage = {
+//       name,
+//       email,
+//       password: hashedPassword,
+//       otp,
+//     };
+
+//     // Respond to user
+//     res.status(200).json({
+//       message:
+//         "Verification code sent to your email. Please verify to complete registration.",
+//       tempStorage,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 exports.verifyOtp = async (req, res) => {
   const { tempStorage, userOtp } = req.body;
@@ -258,10 +320,15 @@ exports.resetPasswordController = async (req, res) => {
 };
 
 exports.getUserProfile = async (req, res) => {
-  const userProfile = await User.findOne({ email });
-  if (!userProfile) {
-    return res.status(404).json({ message: 'User not found.' });
+  try {
+    const id = req.user._id;
+    const userProfile = await User.findOne({ id });
+    if (!userProfile) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json({ profile: userProfile });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ message: 'Server error.' });
   }
-
-  res.json({ profile: userProfile });
 };

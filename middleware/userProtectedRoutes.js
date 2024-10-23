@@ -1,28 +1,27 @@
 const jwt = require('jsonwebtoken');
 
 function userProtectedRoutes(req, res, next) {
-  try {
-    const token = req.headers['authorization']?.split(' ')[1];
-    // console.log(token);
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+  // Extract token from Authorization header
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  // Verify token using jwt.verify
+  jwt.verify(token, process.env.JWT_SECRET_KEY_AUTH, (err, decoded) => {
+    if (err) {
+      // Return early if token is invalid or expired
+      return res.status(401).json({ message: 'Invalid or expired token' });
     }
 
-    // Use async callback with jwt.verify
-    jwt.verify(token, process.env.JWT_SECRET_KEY_AUTH, (err, decoded) => {
-      if (err) {
-        // Directly return here to prevent calling next() after sending a response
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-      req.user = decoded;
+    // Store decoded user information in req.user
+    req.user = decoded;
 
-      // Call next only within the callback after the token is verified
-      next();
-    });
-  } catch (err) {
-    // Use next(err) to pass the error to Express error handling middleware
-    next(err);
-  }
+    // Call the next middleware or route handler
+    next();
+  });
 }
 
 module.exports = userProtectedRoutes;
