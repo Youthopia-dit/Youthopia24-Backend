@@ -1,66 +1,66 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const registrationSchema = new mongoose.Schema({
-    regID: {
+  regID: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  teamName: {
+    type: String,
+    required: true,
+  },
+  college: {
+    type: String,
+    required: true,
+  },
+  eventDetails: {
+    eventID: {
+      type: String,
+      required: true,
+    },
+    eventName: {
+      type: String,
+      required: true,
+    },
+    eventCategory: {
+      type: String,
+      required: true,
+    },
+    venue: {
+      type: String,
+      required: true,
+    },
+  },
+  members: [
+    {
+      name: {
         type: String,
         required: true,
-    },
-    email: {
+      },
+      contactNumber: {
         type: String,
         required: true,
-    },
-    teamName: {
+      },
+      emailID: {
         type: String,
         required: true,
-    },
-    college: {
+      },
+      id: {
         type: String,
         required: true,
+      },
     },
-    eventDetails: {
-        eventID: {
-            type: String,
-            required: true,
-        },
-        eventName: {
-            type: String,
-            required: true,
-        },
-        eventCategory: {
-            type: String,
-            required: true,
-        },
-        venue: {
-            type: String,
-            required: true,
-        },
-    },
-    members: [
-        {
-            name: {
-                type: String,
-                required: true,
-            },
-            contactNumber: {
-                type: String,
-                required: true,
-            },
-            emailID: {
-                type: String,
-                required: true,
-            },
-            id: {
-                type: String,
-                required: true,
-            },
-        }
-    ],
-    payment: {
-        paid: {type: Boolean, required: true},
-        amount: {type: String, required:true}
-    }
+  ],
+  payment: {
+    paid: { type: Boolean, required: true },
+    amount: { type: String, required: true },
+  },
 });
 
-const Registration = mongoose.model("Registration", registrationSchema);
+const Registration = mongoose.model('Registration', registrationSchema);
 
 module.exports = Registration;
