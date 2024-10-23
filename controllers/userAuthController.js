@@ -48,7 +48,7 @@ exports.initialSignup = async (req, res) => {
       year,
       collegeId,
       phone,
-      governmentId,
+      identityNumber: governmentId,
     });
     const token = jwt.sign(
       {

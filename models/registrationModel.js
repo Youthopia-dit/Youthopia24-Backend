@@ -41,18 +41,13 @@ const registrationSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
-            contactNumber: {
+            collegeId: {
                 type: String,
                 required: true,
             },
-            emailID: {
+            personalId: {
                 type: String,
-                required: true,
-            },
-            id: {
-                type: String,
-                required: true,
-            },
+            }
         }
     ],
     payment: {

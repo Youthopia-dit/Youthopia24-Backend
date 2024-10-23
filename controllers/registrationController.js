@@ -12,7 +12,8 @@ exports.registerEvent = async (req, res) => {
       teamName,
       college,
       members,
-      phone
+      phone,
+      payment
     } = req.body;
     const regID = uuidv4();
     const event = await Event.findOne({ event_id: eventId });
@@ -32,6 +33,7 @@ exports.registerEvent = async (req, res) => {
         eventCategory: event.category,
         venue: event.venue,
       },
+      payment,
       members,
     });
     const user = await User.findOne({ email });
@@ -39,9 +41,9 @@ exports.registerEvent = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    await registration.save();
     user.registeredEvent.push(registration.regID);
     await user.save();
-    await registration.save();
 
     res.status(201).json({ message: "Registration successful", registration });    
   } catch (error) {
