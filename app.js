@@ -1,7 +1,7 @@
 const express = require('express');
 const eventRoutes = require('./Routes/events');
 // const cors
-// const cors = require('cors');
+const cors = require('cors');
 // const fs = require('fs');
 const https = require('https');
 // const adminRoutes = require("./Routes/adminRoutes");
@@ -19,7 +19,7 @@ const connectDB = require('./db');
 const app = express();
 
 connectDB();
-// app.use(cors());
+app.use(cors());
 
 // Middleware
 app.use(express.json()); // Parse incoming JSON requests
@@ -52,4 +52,5 @@ app.use('/api/user', authRoutes);
 // Start Server
 const PORT = 4000;
 const server = https.createServer( app);
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+// server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
