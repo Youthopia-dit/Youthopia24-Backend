@@ -32,25 +32,22 @@ app.use("/api/register/", eventRegisterRoutes);
 // app.use("/api/docs", docsRoutes);
 app.use('/api/gethighlights', highlightRoutes);
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
 
-// const options = {
-//   key: fs.readFileSync('./private.key'),  // Private key
-//   cert: fs.readFileSync('./certificate.crt'), // Certificate
-//   ca: fs.readFileSync('./ca_bundle.crt')
-// };
+const options = {
+  key: fs.readFileSync('./private.key'),  // Private key
+  cert: fs.readFileSync('./certificate.crt'), // Certificate
+  ca: fs.readFileSync('./ca_bundle.crt')
+};
 
 app.use('/api/user', authRoutes);
 // app.use("/admin", adminRoutes);
 
 // Start Server
 const PORT = 4000;
-const server = https.createServer( app);
-// server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+const server = https.createServer(app, options);
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+// app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
