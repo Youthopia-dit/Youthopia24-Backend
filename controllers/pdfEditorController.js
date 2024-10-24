@@ -13,6 +13,16 @@ function generateQRCode(data, outputPath) {
     });
   });
 }
+async function sendMail(email, outputPath) {
+  const subject = "Your Youthopia Documents";
+  const content =
+    "Dear Participant,\n\nPlease find attached your documents for the Youthopia event.\n\nBest regards,\nYouthopia Team";
+  const emailStatus = await SendEmail(email, subject, content, outputPath);
+  console.log(`Email status for ${email}: ${emailStatus}`);
+  if (emailStatus == "Mail Sent Successfully") {
+    return true;
+  }
+}
 
 async function editPdf(data) {
   for (const event of data) {
@@ -140,27 +150,17 @@ async function editPdf(data) {
     }
 
     const pdfBytesNew = await pdfDoc.save();
-    const subject = "Your Youthopia Documents";
-    const content =
-      "Dear Participant,\n\nPlease find attached your documents for the Youthopia event.\n\nBest regards,\nYouthopia Team";
     fs.writeFileSync(outputPdfPath, pdfBytesNew);
     console.log(
       `PDF for ${event.email.split("@")[0]} edited and saved successfully.`
     );
-    const emailStatus = await SendEmail(
-      event.email,
-      subject,
-      content,
-      outputPdfPath
-    );
-    console.log(`Email status for ${event.email}: ${emailStatus}`);
-
-    fs.unlink(qrCodePath, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      }
-    });
-    if (emailStatus == "Mail Sent Successfully") {
+    const mailstatus = await sendMail(event.email, outputPdfPath);
+    if (mailstatus) {
+      fs.unlink(qrCodePath, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        }
+      });
       fs.unlink(outputPdfPath, (err) => {
         if (err) {
           console.error("Error deleting file:", err);
