@@ -16,12 +16,9 @@ let transporter = nodemailer.createTransport({
 });
 
 exports.SendEmail = async (email, subject, content, attachmentPath) => {
-  // Set attachmentPath to null if undefined
   attachmentPath = attachmentPath || null;
 
-  // Define mail options
   const mailOptions = {
-    // from: 'registration.youthopia@dituniversity.edu.in',
     from: 'registration.youthopia@dituniversity.edu.in',
     to: email,
     subject: subject,
@@ -37,7 +34,6 @@ exports.SendEmail = async (email, subject, content, attachmentPath) => {
   };
 
   try {
-    // Send mail and wait for the result
     let info = await transporter.sendMail(mailOptions);
     console.log("Message sent: %s", info.messageId);
     return "Mail Sent Successfully";

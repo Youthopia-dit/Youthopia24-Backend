@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   identityNumber: {
     type: String,
-    default: null,
+    default: "",
   },
   profilePictureUrl: {
     type: String,

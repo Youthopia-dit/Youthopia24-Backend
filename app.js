@@ -1,7 +1,7 @@
 const express = require('express');
 const eventRoutes = require('./Routes/events');
 const cors = require('cors');
-// const fs = require('fs');
+const fs = require('fs');
 const https = require('https');
 // const adminRoutes = require("./Routes/adminRoutes");
 // const sponsor = require("./Routes/sponsor");
@@ -35,16 +35,16 @@ app.get('/', (req, res) => {
 });
 
 
-// const options = {
-//   key: fs.readFileSync('./private.key'),  // Private key
-//   cert: fs.readFileSync('./certificate.crt'), // Certificate
-//   ca: fs.readFileSync('./ca_bundle.crt')
-// };
+const options = {
+  key: fs.readFileSync('./private.key'),  // Private key
+  cert: fs.readFileSync('./certificate.crt'), // Certificate
+  ca: fs.readFileSync('./ca_bundle.crt')
+};
 
 app.use('/api/user', authRoutes);
 // app.use("/admin", adminRoutes);
 
 const PORT = 4000;
-const server = https.createServer( app);
-// server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+const server = https.createServer(option, app);
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+// app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
