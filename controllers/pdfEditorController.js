@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const QRCode = require("qrcode");
-const { PDFDocument, StandardFonts, rgb } = require("pdf-lib")
+const { SendEmail } = require("../utils/mailer");
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
 // Utility function to generate QR code as a promise
 function generateQRCode(data, outputPath) {
@@ -18,13 +19,16 @@ async function editPdf(data) {
     const existingPdfPath = path.join(__dirname, "../input.pdf");
     const pdfBytes = fs.readFileSync(existingPdfPath);
     const pdfDoc = await PDFDocument.load(pdfBytes);
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
     const pages = pdfDoc.getPages();
     const firstPage = pages[0];
 
     // Generate QR code and wait for it to finish
-    const qrCodePath = path.join(__dirname, "qrcode.png");
-    await generateQRCode(JSON.stringify(event,["email","regID","eventID"]), qrCodePath);
+    const qrCodePath = path.join(__dirname, "../qrcode.png");
+    await generateQRCode(
+      JSON.stringify(event, ["email", "regID", "eventID"]),
+      qrCodePath
+    );
 
     let yPosition = 627;
     firstPage.drawText(event.eventName, {
@@ -93,63 +97,76 @@ async function editPdf(data) {
     }
     firstPage.drawText("Name of Certifying Authority:", {
       x: 85,
-      y: participantYPosition-20,
+      y: participantYPosition - 20,
       size: 12,
-      font:timesRomanFont,
-      font:timesRomanFont,
+      font: timesRomanFont,
+      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText("Designation:", {
       x: 85,
-      y: participantYPosition-40,
+      y: participantYPosition - 40,
       size: 12,
-      font:timesRomanFont,
+      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText("Official Contact Information:", {
       x: 85,
-      y: participantYPosition-60,
+      y: participantYPosition - 60,
       size: 12,
-      font:timesRomanFont,
+      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText("Signature/Seal:", {
       x: 85,
-      y: participantYPosition-80,
+      y: participantYPosition - 80,
       size: 12,
-      font:timesRomanFont,
+      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText("Date:", {
       x: 450,
-      y: participantYPosition-80,
+      y: participantYPosition - 80,
       size: 12,
-      font:timesRomanFont,
+      font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
     const outputPdfPath = path.join(
       __dirname,
-      `../${event.email.split("@")[0]}-document.pdf`
+      `../${event.email.split("@")[0]}-gate pass.pdf`
     );
     if (!fs.existsSync(path.dirname(outputPdfPath))) {
       fs.mkdirSync(path.dirname(outputPdfPath), { recursive: true });
     }
 
     const pdfBytesNew = await pdfDoc.save();
+    const subject = "Your Youthopia Documents";
+    const content =
+      "Dear Participant,\n\nPlease find attached your documents for the Youthopia event.\n\nBest regards,\nYouthopia Team";
     fs.writeFileSync(outputPdfPath, pdfBytesNew);
     console.log(
       `PDF for ${event.email.split("@")[0]} edited and saved successfully.`
     );
-    fs.unlink( qrCodePath, (err) => {
+    const emailStatus = await SendEmail(
+      event.email,
+      subject,
+      content,
+      outputPdfPath
+    );
+    console.log(`Email status for ${event.email}: ${emailStatus}`);
+
+    fs.unlink(qrCodePath, (err) => {
       if (err) {
         console.error("Error deleting file:", err);
       }
     });
-    // fs.unlink( outputPdfPath, (err) => {
-    //     if (err) {
-    //       console.error("Error deleting file:", err);
-    //     }
-    //   });
+    if (emailStatus == "Mail Sent Successfully") {
+      fs.unlink(outputPdfPath, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        }
+      });
+    }
   }
 }
 

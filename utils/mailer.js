@@ -1,22 +1,27 @@
 const nodemailer = require("nodemailer");
-const fs = require("fs");
+const path = require("path");
 
 let transporter = nodemailer.createTransport({
   host: "smtp.office365.com",
   port: 587,
   secure: false,
   auth: {
-    user: "registration.youthopia@dit.edu.in",
-    pass: "C)618294122404ah",
+    user: "registration.youthopia@dituniversity.edu.in",
+    pass: "Doz46319",
   },
   tls: {
     rejectUnauthorized: false,
   },
 });
 
-exports.SendEmail = (email, subject, content, attachmentPath = null) => {
+exports.SendEmail = async (email, subject, content, attachmentPath) => {
+  // Set attachmentPath to null if undefined
+  attachmentPath = attachmentPath || null;
+
+  // Define mail options
   const mailOptions = {
-    from: '"Youthopia" <registration.youthopia@dit.edu.in>',
+    // from: 'registration.youthopia@dituniversity.edu.in',
+    from: 'registration.youthopia@dituniversity.edu.in',
     to: email,
     subject: subject,
     text: content,
@@ -30,18 +35,13 @@ exports.SendEmail = (email, subject, content, attachmentPath = null) => {
       : [],
   };
 
-  const flag = 0;
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error occurred:", error);
-      flag = 1;
-      return "Mail Sending Failed";
-    }
+  try {
+    // Send mail and wait for the result
+    let info = await transporter.sendMail(mailOptions);
     console.log("Message sent: %s", info.messageId);
     return "Mail Sent Successfully";
-  });
-  if (flag == 0) {
-    return "Mail Sent Successfully";
+  } catch (error) {
+    console.log("Error occurred:", error);
+    return "Mail Sending Failed";
   }
-  return "Error Occured";
 };

@@ -8,7 +8,7 @@ const https = require('https');
 const authRoutes = require('./Routes/authRoutes');
 const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
 const mailerRoutes = require("./Routes/mailerRoutes");
-// const docsRoutes = require("./Routes/pdfRoutes");
+const docsRoutes = require("./Routes/pdfRoutes");
 const highlightRoutes = require('./Routes/highlightsRoutes');
 
 require('dotenv').config();
@@ -27,7 +27,7 @@ app.use('/api/events', eventRoutes); // Use the events routes
 // app.use("/api/sponsor", sponsor);
 app.use("/api/mailer", mailerRoutes);
 app.use("/api/register/", eventRegisterRoutes);
-// app.use("/api/docs", docsRoutes);
+app.use("/api/docs", docsRoutes);
 app.use('/api/gethighlights', highlightRoutes);
 
 app.get('/', (req, res) => {
