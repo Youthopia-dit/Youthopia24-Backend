@@ -23,7 +23,7 @@ exports.registerEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    
+
     const registration = new Registration({
       regID,
       email,
@@ -114,3 +114,20 @@ exports.getRegistrationsByIds = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+exports.getRegistrations = async (req, res) => {
+  try {
+    const {eventId} = req.params;
+
+    const registrations = await Registration.find({ 'eventDetails.eventID': eventId });
+
+    if (registrations.length === 0) {
+      return res.status(404).json({ message: 'No registrations found' });
+    }
+
+    res.status(200).json({ registrations });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+}
