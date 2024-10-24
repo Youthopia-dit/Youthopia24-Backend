@@ -51,7 +51,6 @@ const registrationSchema = new mongoose.Schema({
             },
             personalId: {
                 type: String,
-                required: true,
             }
         }
     ],

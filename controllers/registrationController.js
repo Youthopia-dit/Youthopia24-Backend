@@ -19,23 +19,11 @@ exports.registerEvent = async (req, res) => {
       payment
     } = req.body;
     const regID = uuidv4();
-    const event = await Event.findOne({ event_id: eventDetails.eventID });
+    const event = await Event.findOne({ event_id: eventId });
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-
-    const teamSize = members.length;
-    const priceDetails = event.prices.find((price) => price.teamSize === teamSize);
-    if (!priceDetails) {
-      return res.status(400).json({ message: "Invalid team size for this event" });
-    }
-
-    const amount = isDIT ? priceDetails.priceDit : priceDetails.priceNonDit;
-    const membersWithIds = members.map((member) => ({
-      ...member,
-      id: new mongoose.Types.ObjectId(), // Automatically generate ObjectId for each member
-    }));
-
+    
     const registration = new Registration({
       regID,
       email,
@@ -48,10 +36,10 @@ exports.registerEvent = async (req, res) => {
         venue: event.venue,
         event_poster: event.event_poster,
       },
-      members: membersWithIds,
+      members: members,
       payment: {
         paid: payment.paid,
-        amount: amount.toString(),
+        amount: payment.amount.toString(),
       },
     });
 
@@ -61,42 +49,41 @@ exports.registerEvent = async (req, res) => {
     }
     await registration.save();
 
-    await registration.save();
     user.registeredEvent.push(registration.regID);
     await user.save();
 
-    const pdfData = [
-      {
-        eventName: event.event_name,
-        eventDate: event.eventDate,
-        Venue: event.venue,
-        collegeName: college,
-        email: email,
-        participants: members.map((member, index) => ({
-          Sno: index + 1,
-          name: member.name,
-          collegeId: member.collegeId,
-          governmentId: member.governmentId,
-        })),
-      },
-    ];
+    // const pdfData = [
+    //   {
+    //     eventName: event.event_name,
+    //     eventDate: event.eventDate,
+    //     Venue: event.venue,
+    //     collegeName: college,
+    //     email: email,
+    //     participants: members.map((member, index) => ({
+    //       Sno: index + 1,
+    //       name: member.name,
+    //       collegeId: member.collegeId,
+    //       governmentId: member.governmentId,
+    //     })),
+    //   },
+    // ];
 
-    const pdfPaths = await getData([pdfData] ); // Generating PDFs
+    // const pdfPaths = await getData([pdfData] ); // Generating PDFs
 
-    if (pdfPaths && pdfPaths.length > 0) {
-      SendEmail(
-        email,
-        "Registration Confirmation",
-        "Your registration for the event has been successful. Please find the attached confirmation PDF.",
-        pdfPaths[0]
-      );
-    } else {
-      SendEmail(
-        email,
-        "Registration Confirmation",
-        "Your registration for the event has been successful."
-      );
-    }
+    // if (pdfPaths && pdfPaths.length > 0) {
+    //   SendEmail(
+    //     email,
+    //     "Registration Confirmation",
+    //     "Your registration for the event has been successful. Please find the attached confirmation PDF.",
+    //     pdfPaths[0]
+    //   );
+    // } else {
+    //   SendEmail(
+    //     email,
+    //     "Registration Confirmation",
+    //     "Your registration for the event has been successful."
+    //   );
+    // }
 
     res.status(201).json({ message: "Registration successful", registration });
   } catch (error) {
