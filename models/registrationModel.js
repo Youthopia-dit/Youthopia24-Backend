@@ -34,6 +34,10 @@ const registrationSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
+        event_poster: {
+          type: String,
+          required: true,
+        },
     },
     members: [
         {
