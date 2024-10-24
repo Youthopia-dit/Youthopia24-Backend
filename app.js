@@ -2,7 +2,6 @@ const express = require('express');
 const eventRoutes = require('./Routes/events');
 const cors = require('cors');
 const fs = require('fs');
-const fs = require('fs');
 const https = require('https');
 // const adminRoutes = require("./Routes/adminRoutes");
 // const sponsor = require("./Routes/sponsor");
