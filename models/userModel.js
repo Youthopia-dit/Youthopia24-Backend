@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   identityNumber: {
     type: String,
-    default: null,
+    default: "",
   },
   profilePictureUrl: {
     type: String,
@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
   registeredEvent: {
     type: Array,
     default: [],
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

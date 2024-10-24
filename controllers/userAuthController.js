@@ -1,7 +1,8 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
-const { totp } = require('otplib');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
+const { totp } = require("otplib");
+const {SendEmail}=require("../utils/mailer")
 
 const sendEmail = (email_id, subject, content) => {
   console.log(content);
@@ -48,7 +49,9 @@ exports.initialSignup = async (req, res) => {
       collegeId,
       phone,
       identityNumber: governmentId,
+      isVerified: true,
     });
+    console.log('user created');
     const token = jwt.sign(
       {
         id: newUser._id,
@@ -59,49 +62,43 @@ exports.initialSignup = async (req, res) => {
         expiresIn: '10d',
       }
     );
-    console.log('user created');
-    res.status(201).json({ message: 'Signup completed successfully', token });
+    res.status(201).json({ message: 'Signup successful', token});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.verifyOtp = async (req, res) => {
-  const { tempStorage, userOtp } = req.body;
-
+exports.sendOtp = async (req, res) => {
+  const { email } = req.body;
   try {
-    // Retrieve user's data from temporary storage
-    const userData = tempStorage; // Replace with your method of temporary storage retrieval
-    const verification = totp.check(userOtp, userData.email);
-    console.log(userData.email);
+    const user = await User.findOne({email});
+    if (user) {
+      return res.status(409).json({ message: 'User already Exists' });
+    }
+    const otp = totp.generate(email);
+    console.log(otp);
+    await SendEmail(email, 'Verify Your Email', `Your verification code is: ${otp}`);
+    res.status(200).json({ message: 'OTP sent successfully', expiresIn: '5 minutes' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.verifyOtp = async (req, res) => {
+  const { email, userOtp } = req.body;
+
+  console.log(email, userOtp);
+  try {
+    const verification = totp.check(userOtp, email);
+    console.log(email);
     if (!verification) {
       return res
         .status(400)
         .json({ message: 'Invalid OTP. Please try again.' });
+    } else {
+      res.status(200).json({ message: 'OTP verified successfully' });
     }
-
-    // Create the user in the database since OTP is verified
-    const newUser = await User.create({
-      name: userData.name,
-      email: userData.email,
-      password: userData.password, // Already hashed
-    });
-    const token = jwt.sign(
-      {
-        id: newUser._id,
-        email: newUser.email,
-      },
-      process.env.JWT_SECRET_KEY_AUTH,
-      {
-        expiresIn: '10d',
-      }
-    );
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set secure to true if in production (HTTPS)
-      maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
-    });
-    res.status(201).json({ message: 'Signup completed successfully', token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -208,7 +205,7 @@ exports.checkOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
     const token = jwt.sign(
-      { userId: user._id },
+      { userId: user._id , email: user.email},
       process.env.JWT_SECRET_KEY_AUTH,
       { expiresIn: '15m' }
     );
@@ -246,7 +243,7 @@ exports.resetPasswordController = async (req, res) => {
 
     // Re-issue a new token after password reset for security reasons
     const newToken = jwt.sign(
-      { id: user._id },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET_KEY_AUTH,
       {
         expiresIn: '10d',

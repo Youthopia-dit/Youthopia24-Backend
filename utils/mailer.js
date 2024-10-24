@@ -1,38 +1,44 @@
 const nodemailer = require("nodemailer");
+const path = require("path");
+require('dotenv').config();
 
 let transporter = nodemailer.createTransport({
   host: "smtp.office365.com",
   port: 587,
   secure: false,
   auth: {
-    user: "noreply.youthopia@dit.edu.in",
-    pass: "C)618294122404ah",
+    user: process.env.user,
+    pass :  process.env.pass,
   },
   tls: {
     rejectUnauthorized: false,
   },
 });
 
-exports.SendEmail = (email, subject, content) => {
+exports.SendEmail = async (email, subject, content, attachmentPath) => {
+  attachmentPath = attachmentPath || null;
+
   const mailOptions = {
-    from: '"Youthopia" <noreply.youthopia@dit.edu.in>',
+    from: 'registration.youthopia@dituniversity.edu.in',
     to: email,
     subject: subject,
     text: content,
+    attachments: attachmentPath
+      ? [
+          {
+            filename: path.basename(attachmentPath),
+            path: attachmentPath,
+          },
+        ]
+      : [],
   };
 
-  const flag = 0;
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error occurred:", error);
-      flag = 1;
-      return "Mail Sending Failed";
-    }
+  try {
+    let info = await transporter.sendMail(mailOptions);
     console.log("Message sent: %s", info.messageId);
     return "Mail Sent Successfully";
-  });
-  if (flag == 0) {
-    return "Mail Sent Successfully";
+  } catch (error) {
+    console.log("Error occurred:", error);
+    return "Mail Sending Failed";
   }
-  return "Error Occured";
 };
