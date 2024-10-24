@@ -16,7 +16,7 @@ let transporter = nodemailer.createTransport({
 
 exports.SendEmail = (email, subject, content, attachmentPath = null) => {
   const mailOptions = {
-    from: '"Youthopia" <registrations.youthopia@dit.edu.in>',
+    from: '"Youthopia" <registration.youthopia@dit.edu.in>',
     to: email,
     subject: subject,
     text: content,

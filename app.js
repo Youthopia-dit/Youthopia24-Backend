@@ -1,6 +1,5 @@
 const express = require('express');
 const eventRoutes = require('./Routes/events');
-// const cors
 const cors = require('cors');
 // const fs = require('fs');
 const https = require('https');
@@ -21,7 +20,6 @@ const app = express();
 connectDB();
 app.use(cors());
 
-// Middleware
 app.use(express.json()); // Parse incoming JSON requests
 
 // Routes
@@ -32,9 +30,6 @@ app.use("/api/register/", eventRegisterRoutes);
 // app.use("/api/docs", docsRoutes);
 app.use('/api/gethighlights', highlightRoutes);
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -49,7 +44,6 @@ app.get('/', (req, res) => {
 app.use('/api/user', authRoutes);
 // app.use("/admin", adminRoutes);
 
-// Start Server
 const PORT = 4000;
 const server = https.createServer( app);
 // server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
