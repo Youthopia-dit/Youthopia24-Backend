@@ -40,6 +40,7 @@ exports.registerEvent = async (req, res) => {
         eventName: event.event_name,
         eventCategory: event.category,
         venue: event.venue,
+        event_poster: event.event_poster,
       },
       members: membersWithIds,
       payment: {
