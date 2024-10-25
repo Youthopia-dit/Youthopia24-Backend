@@ -91,7 +91,7 @@ exports.registerEvent = async (req, res) => {
       SendEmail(
         email,
         "Registration Confirmation",
-        "Your registration for the event has been successful.You can now proceed for payment."
+        "Your registration for the event has been successful. You can now proceed for payment."
       );
     }
 
