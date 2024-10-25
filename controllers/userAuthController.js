@@ -265,8 +265,8 @@ exports.resetPasswordController = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
   try {
-    const id = req.user._id;
-    const userProfile = await User.findOne({ id });
+    const email = req.user.email;
+    const userProfile = await User.findOne({ email });
     if (!userProfile) {
       return res.status(404).json({ message: 'User not found.' });
     }
