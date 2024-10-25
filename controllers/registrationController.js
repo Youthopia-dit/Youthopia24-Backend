@@ -9,20 +9,20 @@ const { getData } = require("./pdfEditorController");
 
 exports.registerEvent = async (req, res) => {
   try {
-    const {
-      email,
-      eventId,
-      teamName,
-      college,
-      members,
-      phone,
-      payment
-    } = req.body;
+    const { teamName, college, eventId, members, payment, isDIT } = req.body;
+    const { email } = req.user; // Extract email from the middleware
+
     const regID = uuidv4();
     const event = await Event.findOne({ event_id: eventId });
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
+    console.log(req.body)
+
+    const membersWithIds = members.map((member) => ({
+      ...member,
+      id: new mongoose.Types.ObjectId(), // Automatically generate ObjectId for each member
+    }));
 
     const registration = new Registration({
       regID,
@@ -39,7 +39,7 @@ exports.registerEvent = async (req, res) => {
       members: members,
       payment: {
         paid: payment.paid,
-        amount: payment.amount.toString(),
+        amount: payment.amount,
       },
     });
 
@@ -51,41 +51,51 @@ exports.registerEvent = async (req, res) => {
 
     user.registeredEvent.push(registration.regID);
     await user.save();
+    console.log(college)
+    if(college === "DIT University"){
+      SendEmail(
+        email,
+        "Registration Confirmation",
+        `Your registration for the ${event.event_name} has been successful. You can now proceed for payment.`
+      );
+      return res.status(201).json({ message: "Registration successful"});
+    }
 
-    // const pdfData = [
-    //   {
-    //     eventName: event.event_name,
-    //     eventDate: event.eventDate,
-    //     Venue: event.venue,
-    //     collegeName: college,
-    //     email: email,
-    //     participants: members.map((member, index) => ({
-    //       Sno: index + 1,
-    //       name: member.name,
-    //       collegeId: member.collegeId,
-    //       governmentId: member.governmentId,
-    //     })),
-    //   },
-    // ];
+    const pdfData = [
+      {
+        regID: registration.regID,
+        eventID: event.event_id,
+        eventName: event.event_name,
+        eventDate: event.date,
+        Venue: event.venue,
+        collegeName: college,
+        email: email,
+        participants: members.map((member, index) => ({
+          Sno: index + 1,
+          name: member.name,
+          collegeId: member.collegeId,
+          governmentId: member.personalId,
+        })),
+      },
+    ];
+    const pdfPaths = await getData([pdfData] );
 
-    // const pdfPaths = await getData([pdfData] ); // Generating PDFs
+    if (pdfPaths && pdfPaths.length > 0) {
+      SendEmail(
+        email,
+        "Registration Confirmation",
+        "Your registration for the event has been successful. Please find the attached Gate Pass that needs to be certified from your college Authorities. You ca nnow proceed for payment.",
+        pdfPaths[0]
+      );
+    } else {
+      SendEmail(
+        email,
+        "Registration Confirmation",
+        "Your registration for the event has been successful. You can now proceed for payment."
+      );
+    }
 
-    // if (pdfPaths && pdfPaths.length > 0) {
-    //   SendEmail(
-    //     email,
-    //     "Registration Confirmation",
-    //     "Your registration for the event has been successful. Please find the attached confirmation PDF.",
-    //     pdfPaths[0]
-    //   );
-    // } else {
-    //   SendEmail(
-    //     email,
-    //     "Registration Confirmation",
-    //     "Your registration for the event has been successful."
-    //   );
-    // }
-
-    res.status(201).json({ message: "Registration successful", registration });
+    res.status(201).json({ message: "Registration successful"});
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Server error', error });

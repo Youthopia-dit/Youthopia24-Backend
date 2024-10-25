@@ -25,7 +25,11 @@ async function sendMail(email, outputPath) {
 }
 
 async function editPdf(data) {
+  let files = [];
   for (const event of data) {
+    ev = event[0];
+    console.log("Event data:");
+    console.log(ev);
     const existingPdfPath = path.join(__dirname, "../input.pdf");
     const pdfBytes = fs.readFileSync(existingPdfPath);
     const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -41,26 +45,26 @@ async function editPdf(data) {
     );
 
     let yPosition = 627;
-    firstPage.drawText(event.eventName, {
+    firstPage.drawText(ev.eventName, {
       x: 175,
       y: yPosition,
       size: 14,
       color: rgb(0, 0, 0),
     });
-    firstPage.drawText(event.eventDate, {
+    firstPage.drawText(ev.eventDate, {
       x: 175,
       y: yPosition - 20,
       size: 14,
       color: rgb(0, 0, 0),
     });
-    firstPage.drawText(event.Venue, {
+    firstPage.drawText(ev.Venue, {
       x: 175,
       y: yPosition - 40,
       size: 14,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText(
-      `This is to certify that the below mentioned student(s) is/are bona fide student(s) of ${event.collegeName}.\n I confirm that the provided College ID(s) are valid and belong to the listed student(s).`,
+      `This is to certify that the below mentioned student(s) is/are bona fide student(s) of ${ev.collegeName}.\n I confirm that the provided College ID(s) are valid and belong to the listed student(s).`,
       { x: 70, y: yPosition - 70, size: 10, color: rgb(0, 0, 0) }
     );
 
@@ -78,7 +82,7 @@ async function editPdf(data) {
     });
 
     let participantYPosition = yPosition - 170;
-    for (const participant of event.participants) {
+    for (const participant of ev.participants) {
       firstPage.drawText(participant.Sno.toString(), {
         x: 85,
         y: participantYPosition,
@@ -143,7 +147,7 @@ async function editPdf(data) {
     });
     const outputPdfPath = path.join(
       __dirname,
-      `../${event.email.split("@")[0]}-gate pass.pdf`
+      `../${ev.email.split("@")[0]}-gate pass.pdf`
     );
     if (!fs.existsSync(path.dirname(outputPdfPath))) {
       fs.mkdirSync(path.dirname(outputPdfPath), { recursive: true });
@@ -152,31 +156,32 @@ async function editPdf(data) {
     const pdfBytesNew = await pdfDoc.save();
     fs.writeFileSync(outputPdfPath, pdfBytesNew);
     console.log(
-      `PDF for ${event.email.split("@")[0]} edited and saved successfully.`
+      `PDF for ${ev.email.split("@")[0]} edited and saved successfully.`
     );
-    const mailstatus = await sendMail(event.email, outputPdfPath);
-    if (mailstatus) {
-      fs.unlink(qrCodePath, (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        }
-      });
-      fs.unlink(outputPdfPath, (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        }
-      });
-    }
+    files.push(outputPdfPath);
+    // const mailstatus = await sendMail(ev.email, outputPdfPath);
+    // if (mailstatus) {
+    //   fs.unlink(qrCodePath, (err) => {
+    //     if (err) {
+    //       console.error("Error deleting file:", err);
+    //     }
+    //   });
+    //   fs.unlink(outputPdfPath, (err) => {
+    //     if (err) {
+    //       console.error("Error deleting file:", err);
+    //     }
+    //   });
+    // }
   }
+  return files;
 }
 
-exports.getData = async (req, res) => {
-  const { data } = req.body;
+exports.getData = async (data) => {
   try {
-    await editPdf(data);
-    res.status(200).json({ message: "Documents processed successfully" });
+    const pdfPaths = await editPdf(data); // Assuming editPdf generates and returns the paths
+    return pdfPaths; // Return the generated PDF paths
   } catch (error) {
-    console.error("Error processing documents:", error);
-    res.status(500).json({ message: "Error processing request", error });
+    console.error("Error generating PDFs:", error);
+    throw new Error("Error generating PDFs");
   }
 };
