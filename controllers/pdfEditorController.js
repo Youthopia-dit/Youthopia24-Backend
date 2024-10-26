@@ -1,10 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const QRCode = require("qrcode");
-const { SendEmail } = require("../utils/mailer");
 const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
-// Utility function to generate QR code as a promise
 function generateQRCode(data, outputPath) {
   return new Promise((resolve, reject) => {
     QRCode.toFile(outputPath, data, (err) => {
@@ -13,17 +11,97 @@ function generateQRCode(data, outputPath) {
     });
   });
 }
-async function sendMail(email, outputPath) {
-  const subject = "Your Youthopia Documents";
-  const content =
-    "Dear Participant,\n\nPlease find attached your documents for the Youthopia event.\n\nBest regards,\nYouthopia Team";
-  const emailStatus = await SendEmail(email, subject, content, outputPath);
-  console.log(`Email status for ${email}: ${emailStatus}`);
-  if (emailStatus == "Mail Sent Successfully") {
-    return true;
+async function editticket(data) {
+  let files = [];
+  for (const event of data) {
+    ev = event[0];
+    const existingPdfPath = path.join(__dirname, "../ticket.pdf");
+    const pdfBytes = fs.readFileSync(existingPdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    console.log("gsfgsfb");
+    console.log(ev);
+    let xPosition = 400;
+    firstPage.drawText(`Name: ${ev.teamName}`, {
+      x: xPosition,
+      y: 242,
+      size: 15,
+      color: rgb(1, 1, 1),
+    });
+    firstPage.drawText(
+      `College Name: ${
+        ev.collegeName.length > 42
+          ? ev.collegeName.slice(0, 42) + "\n" + ev.collegeName.slice(42)
+          : ev.collegeName
+      }`,
+      {
+        x: xPosition,
+        y: 192,
+        size: 15,
+        color: rgb(1, 1, 1),
+      }
+    );
+    firstPage.drawText(`Members:  ${ev.participants.length}`, {
+      x: xPosition,
+      y: 142,
+      size: 15,
+      color: rgb(1, 1, 1),
+    });
+    firstPage.drawText(`Ticket ID: ${ev.orderID}`, {
+      x: xPosition,
+      y: 102,
+      size: 15,
+      color: rgb(1, 1, 1),
+    });
+    firstPage.drawText(`Name: ${ev.eventName}`, {
+      x: xPosition+470,
+      y: 242,
+      size: 15,
+      color: rgb(1, 1, 1),
+    });
+    firstPage.drawText(
+      `Date:  ${ev.eventDate}`,
+      {
+        x: xPosition+470,
+        y: 202,
+        size: 15,
+        color: rgb(1, 1, 1),
+      }
+    );
+    firstPage.drawText(
+      `Time:  ${ev.eventTime}`,
+      {
+        x: xPosition+470,
+        y: 162,
+        size: 15,
+        color: rgb(1, 1, 1),
+      }
+    );
+    firstPage.drawText(`Venue:  ${ev.Venue}`, {
+      x: xPosition+470,
+      y: 122,
+      size: 15,
+      color: rgb(1, 1, 1),
+    });
+
+    const outputPdfPath = path.join(
+      __dirname,
+      `../${ev.email.split("@")[0]}-ticket.pdf`
+    );
+    if (!fs.existsSync(path.dirname(outputPdfPath))) {
+      fs.mkdirSync(path.dirname(outputPdfPath), { recursive: true });
+    }
+
+    const pdfBytesNew = await pdfDoc.save();
+    fs.writeFileSync(outputPdfPath, pdfBytesNew);
+    console.log(
+      `PDF for ${ev.email.split("@")[0]} edited and saved successfully.`
+    );
+    files.push(outputPdfPath);
+    return files;
   }
 }
-
 async function editPdf(data) {
   let files = [];
   for (const event of data) {
@@ -48,19 +126,19 @@ async function editPdf(data) {
     firstPage.drawText(ev.eventName, {
       x: 175,
       y: yPosition,
-      size: 14,
+      size: 12,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText(ev.eventDate, {
       x: 175,
       y: yPosition - 20,
-      size: 14,
+      size: 12,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText(ev.Venue, {
       x: 175,
       y: yPosition - 40,
-      size: 14,
+      size: 12,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText(
@@ -75,7 +153,7 @@ async function editPdf(data) {
 
     // Draw the QR code image on the PDF
     firstPage.drawImage(image, {
-      x: 420,
+      x: 440,
       y: 587,
       width: imageDims.width,
       height: imageDims.height,
@@ -178,10 +256,22 @@ async function editPdf(data) {
 
 exports.getData = async (data) => {
   try {
-    const pdfPaths = await editPdf(data); // Assuming editPdf generates and returns the paths
-    return pdfPaths; // Return the generated PDF paths
+    // const pdfPaths = await editPdf(data); // Assuming editPdf generates and returns the paths
+    const ticketPaths = await editticket(data); // Assuming editPdf generates and returns the paths
+    return ticketPaths; // Return the generated PDF paths
   } catch (error) {
     console.error("Error generating PDFs:", error);
     throw new Error("Error generating PDFs");
   }
 };
+
+// exports.getData = async (req, res) => {
+//   const { data } = req.body;
+//   try {
+//     await editticket(data);
+//     res.status(200).json({ message: "Documents processed successfully" });
+//   } catch (error) {
+//     console.error("Error processing documents:", error);
+//     res.status(500).json({ message: "Error processing request", error });
+//   }
+// };
