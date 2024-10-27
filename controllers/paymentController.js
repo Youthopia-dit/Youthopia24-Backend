@@ -1,9 +1,10 @@
 const Registration=require('../models/registrationModel')
 const { v4: uuidv4 } = require("uuid");
-
-
-
 require('dotenv')
+
+
+
+
 // exports.setPayment=async(req,res)=>{
 //     const {email,registrationIDs,paymentInfo,paymentSuccess}=req.body;
 //     registrationIDs.array.forEach(element => {

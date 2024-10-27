@@ -10,6 +10,7 @@ const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
 const mailerRoutes = require("./Routes/mailerRoutes");
 const docsRoutes = require("./Routes/pdfRoutes");
 const highlightRoutes = require('./Routes/highlightsRoutes');
+const PaymentRoutes=require('./Routes/paymentRoutes')
 
 require('dotenv').config();
 
@@ -29,6 +30,8 @@ app.use("/api/mailer", mailerRoutes);
 app.use("/api/register/", eventRegisterRoutes);
 app.use("/api/docs", docsRoutes);
 app.use('/api/gethighlights', highlightRoutes);
+
+app.use('/api/payment',PaymentRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
