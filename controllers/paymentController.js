@@ -1,7 +1,7 @@
 const Registration=require('../models/registrationModel')
 const { v4: uuidv4 } = require("uuid");
-const crypto = require('crypto')
-const secret_key = '1234567890'
+const crypto = require('crypto-js')
+const secret_key =process.env.RazorpayKeySecret
 require('dotenv')
 const Razorpay=require('razorpay')
 
@@ -43,16 +43,24 @@ exports.RazorpayOrder=async(req,res)=>{
 
 
 exports.RazorpayCapture=async(req,res)=>{
-    const data = crypto.createHmac('sha256', secret_key)
+    // const data = crypto.createHmac('sha256', secret_key)
 
-   data.update(JSON.stringify(req.body))
-   console.log(data)
+//    data.update(JSON.stringify(req.body))
 
-   const digest = data.digest('hex')
+   console.log(req.body)
 
-if (digest === req.headers['x-razorpay-signature']) {
+   const orderId = req.body.orderDetails.orderId;
+const paymentId = req.body.orderDetails.paymentId;
+// const razorpaySignature = req.body.orderDetails.signature;
+ const data1=`${orderId}|${paymentId?.current}`
+const generatedSignature =crypto.HmacSHA256(data1, secret_key).toString()
+//   console.log(data1)
 
-       console.log('request is legit')
+//   console.log(generatedSignature)
+
+if (generatedSignature === req.body.orderDetails.signature) {
+
+    //    console.log('request is legit')
 
        //We can send the response and store information in a database.
 
