@@ -4,7 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
 // const adminRoutes = require("./Routes/adminRoutes");
-// const sponsor = require("./Routes/sponsor");
+const sponsor = require("./Routes/sponsor");
 const authRoutes = require('./Routes/authRoutes');
 const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
 const mailerRoutes = require("./Routes/mailerRoutes");
@@ -24,7 +24,7 @@ app.use(express.json()); // Parse incoming JSON requests
 
 // Routes
 app.use('/api/events', eventRoutes); // Use the events routes
-// app.use("/api/sponsor", sponsor);
+app.use("/api/sponsor", sponsor);
 app.use("/api/mailer", mailerRoutes);
 app.use("/api/register/", eventRegisterRoutes);
 app.use("/api/docs", docsRoutes);

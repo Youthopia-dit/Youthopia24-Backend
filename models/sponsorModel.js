@@ -6,27 +6,14 @@ const sponsorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
+    imageUrl: {
       type: String,
       required: true,
-      unique: true,
-    },
-    company: {
-      type: String,
-      required: true,
-    },
-    event: {
-      type: String,
-      required: true,
-    },
-    isVerified: {
-        type: Boolean,
-        default: false,
     }
   },
   { timestamps: true }
 );
 
-const Sponsor = mongoose.model("Sponsor", sponsorSchema);
+const Sponsor = mongoose.model("sponsors", sponsorSchema);
 
 module.exports = Sponsor;

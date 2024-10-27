@@ -1,6 +1,15 @@
 // //const bcrypt = require("bcrypt");
 // const jwt = require("jsonwebtoken");
-// const Sponsor = require("../models/sponsorModel");
+const Sponsor = require("../models/sponsorModel");
+
+exports.getAllSponsors = async (req, res) => {
+    try {
+      const sponsor = await Sponsor.find();
+      res.json({ sponsor });
+    } catch (error) {
+      res.status(500).json({ message: "Error retrieving sponsors", error: error.message });
+    }
+  };
 
 
 // class sponsorController {

@@ -11,6 +11,7 @@ function generateQRCode(data, outputPath) {
     });
   });
 }
+
 async function editticket(data) {
   let files = [];
   for (const event of data) {
@@ -30,10 +31,9 @@ async function editticket(data) {
       color: rgb(1, 1, 1),
     });
     firstPage.drawText(
-      `College Name: ${
-        ev.collegeName.length > 42
-          ? ev.collegeName.slice(0, 42) + "\n" + ev.collegeName.slice(42)
-          : ev.collegeName
+      `College Name: ${ev.collegeName.length > 42
+        ? ev.collegeName.slice(0, 42) + "\n" + ev.collegeName.slice(42)
+        : ev.collegeName
       }`,
       {
         x: xPosition,
@@ -55,7 +55,7 @@ async function editticket(data) {
       color: rgb(1, 1, 1),
     });
     firstPage.drawText(`Name: ${ev.eventName}`, {
-      x: xPosition+470,
+      x: xPosition + 470,
       y: 242,
       size: 15,
       color: rgb(1, 1, 1),
@@ -63,7 +63,7 @@ async function editticket(data) {
     firstPage.drawText(
       `Date:  ${ev.eventDate}`,
       {
-        x: xPosition+470,
+        x: xPosition + 470,
         y: 202,
         size: 15,
         color: rgb(1, 1, 1),
@@ -72,14 +72,14 @@ async function editticket(data) {
     firstPage.drawText(
       `Time:  ${ev.eventTime}`,
       {
-        x: xPosition+470,
+        x: xPosition + 470,
         y: 162,
         size: 15,
         color: rgb(1, 1, 1),
       }
     );
     firstPage.drawText(`Venue:  ${ev.Venue}`, {
-      x: xPosition+470,
+      x: xPosition + 470,
       y: 122,
       size: 15,
       color: rgb(1, 1, 1),
@@ -102,6 +102,7 @@ async function editticket(data) {
     return files;
   }
 }
+
 async function editPdf(data) {
   let files = [];
   for (const event of data) {
@@ -256,9 +257,9 @@ async function editPdf(data) {
 
 exports.getData = async (data) => {
   try {
-    // const pdfPaths = await editPdf(data); // Assuming editPdf generates and returns the paths
-    const ticketPaths = await editticket(data); // Assuming editPdf generates and returns the paths
-    return ticketPaths; // Return the generated PDF paths
+    const pdfPaths = await editPdf(data); // Assuming editPdf generates and returns the paths
+    // const ticketPaths = await editticket(data); // Assuming editPdf generates and returns the paths
+    return pdfPaths; // Return the generated PDF paths
   } catch (error) {
     console.error("Error generating PDFs:", error);
     throw new Error("Error generating PDFs");
