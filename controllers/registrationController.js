@@ -40,7 +40,7 @@ exports.registerEvent = async (req, res) => {
       members: membersWithIds,
       payment: {
         paid: payment.paid,
-        amount: payment.amount,
+        // amount: payment.amount,
       },
     });
 
