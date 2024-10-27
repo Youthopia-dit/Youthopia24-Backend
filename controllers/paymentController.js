@@ -1,7 +1,9 @@
 const Registration=require('../models/registrationModel')
 const { v4: uuidv4 } = require("uuid");
+const crypto = require('crypto')
+const secret_key = '1234567890'
 require('dotenv')
-
+const Razorpay=require('razorpay')
 
 
 
@@ -11,11 +13,13 @@ require('dotenv')
 //         const updateRegistration=await Registration.findOneAndUpdate({regID:element},{"payment.paid":true},{new: true});
 //     });
 // }
+key_id=process.env.RazorpayKeyID
+key_secret=process.env.RazorpayKeyID
 
 exports.RazorpayOrder=async(req,res)=>{
     const razorpay = new Razorpay({
         key_id: process.env.RazorpayKeyID,
-        key_secret: process.env.RazorpayKeyID,
+        key_secret: process.env.RazorpayKeySecret,
     });
 
     // setting up options for razorpay order.
@@ -33,6 +37,34 @@ exports.RazorpayOrder=async(req,res)=>{
             amount: response.amount,
         })
     } catch (err) {
-       res.status(400).send('Not able to create order. Please try again!');
+       res.status(400).json({message:'Not able to create order. Please try again!',err});
     }
+}
+
+
+exports.RazorpayCapture=async(req,res)=>{
+    const data = crypto.createHmac('sha256', secret_key)
+
+   data.update(JSON.stringify(req.body))
+   console.log(data)
+
+   const digest = data.digest('hex')
+
+if (digest === req.headers['x-razorpay-signature']) {
+
+       console.log('request is legit')
+
+       //We can send the response and store information in a database.
+
+       res.json({
+
+           status: 'ok'
+
+       })
+
+} else {
+
+       res.status(400).send('Invalid signature');
+
+   }
 }
