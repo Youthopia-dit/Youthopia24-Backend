@@ -15,9 +15,9 @@ exports.registerEvent = async (req, res) => {
     const regID = uuidv4();
     const event = await Event.findOne({ event_id: eventId });
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ message: "Event not found" });
     }
-    console.log(req.body)
+    console.log(req.body);
 
     const membersWithIds = members.map((member) => ({
       ...member,
@@ -35,6 +35,7 @@ exports.registerEvent = async (req, res) => {
         eventCategory: event.category,
         venue: event.venue,
         event_poster: event.event_poster,
+        event_time:event.start_time,
       },
       members: membersWithIds,
       payment: {
@@ -45,24 +46,25 @@ exports.registerEvent = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     await registration.save();
 
     user.registeredEvent.push(registration.regID);
     await user.save();
-    console.log(college)
-    if(college === "DIT University"){
+    console.log(college);
+    if (college === "DIT University") {
       SendEmail(
         email,
         "Registration Confirmation",
         `Your registration for the ${event.event_name} has been successful. You can now proceed for payment.`
       );
-      return res.status(201).json({ message: "Registration successful"});
+      return res.status(201).json({ message: "Registration successful" });
     }
 
     const pdfData = [
       {
+        teamName: registration.teamName,
         regID: registration.regID,
         eventID: event.event_id,
         eventName: event.event_name,
@@ -70,6 +72,8 @@ exports.registerEvent = async (req, res) => {
         Venue: event.venue,
         collegeName: college,
         email: email,
+        orderID:"1234567890",
+        eventTime:event.start_time,
         participants: members.map((member, index) => ({
           Sno: index + 1,
           name: member.name,
@@ -78,27 +82,21 @@ exports.registerEvent = async (req, res) => {
         })),
       },
     ];
-    const pdfPaths = await getData([pdfData] );
-
-    if (pdfPaths && pdfPaths.length > 0) {
-      SendEmail(
-        email,
-        "Registration Confirmation",
-        "Your registration for the event has been successful. Please find the attached Gate Pass that needs to be certified from your college Authorities. You ca nnow proceed for payment.",
-        pdfPaths[0]
-      );
-    } else {
-      SendEmail(
-        email,
-        "Registration Confirmation",
-        "Your registration for the event has been successful. You can now proceed for payment."
-      );
-    }
-
-    res.status(201).json({ message: "Registration successful"});
+    const pdfPaths = await getData([pdfData]);
+    message =
+      "Your registration for the event has been successful. Please find the attached Gate Pass that needs to be certified from your college Authorities. You can now proceed for payment.";
+    SendEmail(
+      email,
+      "Registration Confirmation",
+      pdfPaths[0] > 0
+        ? message
+        : "Your registration for the event has been successful. You can now proceed for the payment.",
+      pdfPaths[0] || null
+    );
+    res.status(201).json({ message: "Registration successful" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -107,7 +105,9 @@ exports.getRegistrationsByIds = async (req, res) => {
     const { registrationIds } = req.body;
 
     if (!registrationIds || !Array.isArray(registrationIds)) {
-      return res.status(400).json({ message: "Invalid registration IDs format" });
+      return res
+        .status(400)
+        .json({ message: "Invalid registration IDs format" });
     }
 
     const registrations = await Registration.find({
@@ -115,12 +115,12 @@ exports.getRegistrationsByIds = async (req, res) => {
     });
 
     if (registrations.length === 0) {
-      return res.status(404).json({ message: 'No registrations found' });
+      return res.status(404).json({ message: "No registrations found" });
     }
 
     res.status(200).json({ registrations });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
