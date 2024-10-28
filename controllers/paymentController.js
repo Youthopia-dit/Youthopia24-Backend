@@ -1,6 +1,7 @@
 const Registration=require('../models/registrationModel')
 const { v4: uuidv4 } = require("uuid");
 const crypto = require('crypto-js')
+const Payment=require('../models/PaymentModel')
 const secret_key =process.env.RazorpayKeySecret
 require('dotenv')
 const Razorpay=require('razorpay')
@@ -43,13 +44,12 @@ exports.RazorpayOrder=async(req,res)=>{
 
 
 exports.RazorpayCapture=async(req,res)=>{
-    const { registrationIDs, orderDetails, email } = req.body;
-  const { order_id, payment_id, signature } = orderDetails;
-
-  const generatedSignature = crypto
-    .createHmac('sha256', process.env.RazorpayKeySecret)
-    .update(`${order_id}|${payment_id}`)
-    .digest('hex');
+    const { registrationIDs, orderDetails } = req.body;
+    const {email}=req.user
+  const { orderId, paymentId, signature } = orderDetails;
+  const data =`${orderId}|${paymentId?.current}`
+  const generatedSignature = crypto.HmacSHA256(data, secret_key).toString()
+  console.log(generatedSignature,"Generated Signature")
 
   if (generatedSignature !== signature) {
     return res.status(400).json({ message: 'Invalid signature' });
@@ -64,8 +64,8 @@ exports.RazorpayCapture=async(req,res)=>{
       email: email,
       registrationIds: registrationIDs,
       paymentInfo: {
-        order_id: order_id,
-        payment_id: payment_id
+        order_id: orderId,
+        payment_id: paymentId.current
       },
       paymentSuccess: true,
     });
@@ -77,3 +77,14 @@ exports.RazorpayCapture=async(req,res)=>{
     res.status(500).json({ message: 'Error updating payment status', error: error.message });
   }
 }
+
+
+exports.getAllPayments = async (req, res) => {
+    try {
+      const registrations = await Payment.find(); // retrieves all documents
+      res.status(200).json(registrations); // sends all records in the response
+    } catch (error) {
+      console.error("Error retrieving records:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  };

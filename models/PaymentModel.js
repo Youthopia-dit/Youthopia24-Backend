@@ -9,5 +9,5 @@ const PaymentSchema = new mongoose.Schema({
   paymentSuccess: {type: Boolean,required:true}
 });
 
-const Payment=mongoose.model('Payment','PaymentSchema');
+const Payment=mongoose.model('Payment',PaymentSchema);
 module.exports=Payment;
