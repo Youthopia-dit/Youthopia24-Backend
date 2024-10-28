@@ -40,7 +40,7 @@ exports.registerEvent = async (req, res) => {
       members: membersWithIds,
       payment: {
         paid: payment.paid,
-        // amount: payment.amount,
+        amount: payment.amount,
       },
     });
 
@@ -114,9 +114,9 @@ exports.getRegistrationsByIds = async (req, res) => {
       regID: { $in: registrationIds },
     });
 
-    if (registrations.length === 0) {
-      return res.status(404).json({ message: "No registrations found" });
-    }
+    // if (registrations.length === 0) {
+    //   return res.status(404).json({ registrations:[], message: "No registrations found" });
+    // }
 
     res.status(200).json({ registrations });
   } catch (error) {

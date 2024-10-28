@@ -35,7 +35,7 @@ exports.SendEmail = async (email, subject, content, attachmentPath) => {
 
   try {
     let info = await transporter.sendMail(mailOptions);
-    console.log("Message sent: %s", info.messageId);
+    // console.log("Message sent: %s", info.messageId);
     return "Mail Sent Successfully";
   } catch (error) {
     console.log("Error occurred:", error);
