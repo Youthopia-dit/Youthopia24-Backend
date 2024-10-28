@@ -48,6 +48,6 @@ app.use('/api/user', authRoutes);
 // app.use("/admin", adminRoutes);
 
 const PORT = 4000;
-const server = https.createServer(option, app);
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
-// app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+// const server = https.createServer(options, app);
+// server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
