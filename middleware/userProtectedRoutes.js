@@ -5,7 +5,7 @@ function userProtectedRoutes(req, res, next) {
   // Extract token from Authorization header
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; 
-  console.log(token);
+  // console.log(token);
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
@@ -19,7 +19,7 @@ function userProtectedRoutes(req, res, next) {
     }
 
     // Fetch user details from the database using .then()
-    console.log(decoded)
+    // console.log(decoded)
     User.findById(decoded.id)
       .then(user => {
         if (!user) {

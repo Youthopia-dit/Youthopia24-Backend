@@ -114,9 +114,9 @@ exports.getRegistrationsByIds = async (req, res) => {
       regID: { $in: registrationIds },
     });
 
-    if (registrations.length === 0) {
-      return res.status(404).json({ message: "No registrations found" });
-    }
+    // if (registrations.length === 0) {
+    //   return res.status(404).json({ registrations:[], message: "No registrations found" });
+    // }
 
     res.status(200).json({ registrations });
   } catch (error) {
@@ -124,3 +124,19 @@ exports.getRegistrationsByIds = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+
+exports.getRegistrationByEventIDs=async(req,res)=>{
+  const { id } = req.params;
+  try{
+    const registrations = await Registration.find({ 'eventDetails.eventID': id });
+    if (registrations.length === 0) {
+        return res.status(404).json({ message: 'No registrations found for the given event ID.' });
+    }
+    res.json(registrations);
+  }
+  catch (error) {
+    console.error('Error fetching registrations:', error);
+    res.status(500).json({ message: 'Error fetching data from the database.', error });
+}
+}

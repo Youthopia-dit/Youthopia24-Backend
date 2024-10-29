@@ -10,6 +10,7 @@ const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
 const mailerRoutes = require("./Routes/mailerRoutes");
 const docsRoutes = require("./Routes/pdfRoutes");
 const highlightRoutes = require('./Routes/highlightsRoutes');
+const PaymentRoutes=require('./Routes/paymentRoutes')
 
 require('dotenv').config();
 
@@ -30,6 +31,8 @@ app.use("/api/register/", eventRegisterRoutes);
 app.use("/api/docs", docsRoutes);
 app.use('/api/gethighlights', highlightRoutes);
 
+app.use('/api/payment',PaymentRoutes)
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -45,6 +48,6 @@ app.use('/api/user', authRoutes);
 // app.use("/admin", adminRoutes);
 
 const PORT = 4000;
-const server = https.createServer(option, app);
+const server = https.createServer(options, app);
 server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
 // app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

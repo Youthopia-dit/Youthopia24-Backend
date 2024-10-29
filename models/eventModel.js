@@ -79,6 +79,14 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  order:{
+    type:Number,
+    required: true,
+  },
+  paymentEnabled:{
+    type:Boolean,
+    required:true
+  },
   prices: [priceSchema],
 });
 
