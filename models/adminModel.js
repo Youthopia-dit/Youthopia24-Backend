@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
+    username: {
       type: String,
       required: true,
       unique: true,
@@ -16,22 +16,12 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Password is not present'],
       select: false,
     },
-    type: {
-      type: String,
-      required: [true, 'Admin Type is not  Present'],
-    },
-    eventCategory: {
-      type: String,
-      required: true,
-    },
-    eventId: {
-      type: String,
-      required: true,
-    },
+    
+    
   },
   { timestamps: true }
 );
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('admin', userSchema);
 
 module.exports = User;

@@ -4,9 +4,9 @@ const User = require("../models/userModel");
 const { totp } = require("otplib");
 const {SendEmail}=require("../utils/mailer")
 
-const sendEmail = (email_id, subject, content) => {
-  console.log(content);
-};
+// const sendEmail = (email_id, subject, content) => {
+//   // console.log(content);
+// };
 
 totp.options = {
   step: 300, // Time step in seconds
@@ -33,7 +33,7 @@ exports.initialSignup = async (req, res) => {
         .json({ message: 'Please provide all the details' });
     }
 
-    console.log(req.body);
+    // console.log(req.body);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already exists' });
@@ -51,7 +51,7 @@ exports.initialSignup = async (req, res) => {
       identityNumber: governmentId,
       isVerified: true,
     });
-    console.log('user created');
+    // console.log('user created');
     const token = jwt.sign(
       {
         id: newUser._id,
@@ -76,7 +76,7 @@ exports.sendOtp = async (req, res) => {
       return res.status(409).json({ message: 'User already Exists' });
     }
     const otp = totp.generate(email);
-    console.log(otp);
+    // console.log(otp);
     await SendEmail(email, 'Verify Your Email', `Your verification code is: ${otp}`);
     res.status(200).json({ message: 'OTP sent successfully', expiresIn: '5 minutes' });
   } catch (error) {
@@ -88,10 +88,10 @@ exports.sendOtp = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   const { email, userOtp } = req.body;
 
-  console.log(email, userOtp);
+  // console.log(email, userOtp);
   try {
     const verification = totp.check(userOtp, email);
-    console.log(email);
+    // console.log(email);
     if (!verification) {
       return res
         .status(400)
@@ -133,7 +133,7 @@ exports.userLogin = async (req, res) => {
     const token = jwt.sign({ id: user._id, email: user.email}, process.env.JWT_SECRET_KEY_AUTH, {
       expiresIn: '10d',
     });
-    console.log(token);
+    // console.log(token);
 
     // Set the token in an HTTP-only cookie
     res.cookie('token', token, {

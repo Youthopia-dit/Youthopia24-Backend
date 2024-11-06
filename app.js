@@ -3,7 +3,7 @@ const eventRoutes = require('./Routes/events');
 const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
-// const adminRoutes = require("./Routes/adminRoutes");
+const adminRoutes = require("./Routes/adminRoutes");
 const sponsor = require("./Routes/sponsor");
 const authRoutes = require('./Routes/authRoutes');
 const eventRegisterRoutes = require("./Routes/eventRegisterRoutes");
@@ -45,7 +45,7 @@ const options = {
 };
 
 app.use('/api/user', authRoutes);
-// app.use("/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 
 const PORT = 4000;
 const server = https.createServer(options, app);
