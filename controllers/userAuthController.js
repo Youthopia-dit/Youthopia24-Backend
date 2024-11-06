@@ -1,8 +1,8 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
-const { totp } = require("otplib");
-const {SendEmail}=require("../utils/mailer")
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+const { totp } = require('otplib');
+const { SendEmail } = require('../utils/mailer');
 
 const sendEmail = (email_id, subject, content) => {
   console.log(content);
@@ -62,7 +62,7 @@ exports.initialSignup = async (req, res) => {
         expiresIn: '10d',
       }
     );
-    res.status(201).json({ message: 'Signup successful', token});
+    res.status(201).json({ message: 'Signup successful', token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -71,19 +71,24 @@ exports.initialSignup = async (req, res) => {
 exports.sendOtp = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (user) {
       return res.status(409).json({ message: 'User already Exists' });
     }
     const otp = totp.generate(email);
     console.log(otp);
-    await SendEmail(email, 'Verify Your Email', `Your verification code is: ${otp}`);
-    res.status(200).json({ message: 'OTP sent successfully', expiresIn: '5 minutes' });
+    await SendEmail(
+      email,
+      'Verify Your Email',
+      `Your verification code is: ${otp}`
+    );
+    res
+      .status(200)
+      .json({ message: 'OTP sent successfully', expiresIn: '5 minutes' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 exports.verifyOtp = async (req, res) => {
   const { email, userOtp } = req.body;
@@ -130,9 +135,13 @@ exports.userLogin = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id, email: user.email}, process.env.JWT_SECRET_KEY_AUTH, {
-      expiresIn: '10d',
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET_KEY_AUTH,
+      {
+        expiresIn: '10d',
+      }
+    );
     console.log(token);
 
     // Set the token in an HTTP-only cookie
@@ -205,7 +214,7 @@ exports.checkOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
     const token = jwt.sign(
-      { userId: user._id , email: user.email},
+      { userId: user._id, email: user.email },
       process.env.JWT_SECRET_KEY_AUTH,
       { expiresIn: '15m' }
     );
