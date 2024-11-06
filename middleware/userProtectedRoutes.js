@@ -21,7 +21,7 @@ function userProtectedRoutes(req, res, next) {
     // Fetch user details from the database using .then()
     // console.log(decoded)
     User.findById(decoded.id)
-      .then(user => {
+      .then((user) => {
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
@@ -32,7 +32,7 @@ function userProtectedRoutes(req, res, next) {
         // Call the next middleware or route handler
         next();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
       });
