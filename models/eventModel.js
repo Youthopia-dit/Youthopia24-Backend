@@ -87,6 +87,10 @@ const eventSchema = new mongoose.Schema({
     type:Boolean,
     required:true
   },
+  registrarionClosed: {
+    type: Boolean,
+    default: true
+  },
   prices: [priceSchema],
 });
 
